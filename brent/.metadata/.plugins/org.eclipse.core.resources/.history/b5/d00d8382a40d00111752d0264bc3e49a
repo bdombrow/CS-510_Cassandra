@@ -2,7 +2,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.List;
-import java.util.Scanner;
 import java.util.TreeSet;
 
 import org.apache.cassandra.thrift.*;
@@ -14,11 +13,7 @@ import org.apache.thrift.transport.TSocket;
 public class foff1 {
 	public static void main(String[] args) throws Exception {
 		
-		String startNode = "";
-		
-		Scanner input = new Scanner(System.in);
-		System.out.print("Starting Node #");
-		startNode = input.next();
+		String startNode = "1";
 	
 		// Set up decoder.
 		Charset charset = Charset.forName("UTF-8");
@@ -62,11 +57,14 @@ public class foff1 {
 		// The friends set.
 		TreeSet<String> friends = new TreeSet<String>();
 		
-		// Add them to the set
+		// Print them out.
+		//System.out.println("Friends\n");
 		for (KeySlice key : rangeResults) {
+			//System.out.println(decoder.decode(key.bufferForKey()));
 			for (ColumnOrSuperColumn col : key.columns) {
 				String colName = decoder.decode(col.column.name).toString();
 				String colValue = decoder.decode(col.column.value).toString();
+				//System.out.println("\t" + colName + " -> " + colValue);
 				if (colName.contentEquals("end")) {
 					friends.add(colValue);
 				}
@@ -77,16 +75,19 @@ public class foff1 {
 		TreeSet<String> foff = new TreeSet<String>();
 		
 		// Get the friends of the friends.
+		//System.out.println("\nFriends of Friends\n");
 		for (String friend : friends) {
-			
 			indexExpression.value = ByteBuffer.wrap(friend.getBytes());
+			
 			rangeResults = client.get_indexed_slices(parent, indexClause, predicate, consistencyLevel);
 			
-			// Add them to the set
+			// Print them out.
 			for (KeySlice key : rangeResults) {
+				//System.out.println(decoder.decode(key.bufferForKey()));
 				for (ColumnOrSuperColumn col : key.columns) {
 					String colName = decoder.decode(col.column.name).toString();
 					String colValue = decoder.decode(col.column.value).toString();
+					//System.out.println("\t" + colName + " -> " + colValue);
 					if (colName.contentEquals("end")) {
 						foff.add(colValue);
 					}
@@ -94,21 +95,27 @@ public class foff1 {
 			}
 		}
 		
-		// Output the results
-		ByteBuffer rowid = ByteBuffer.wrap(startNode.getBytes());
-		ColumnPath path = new ColumnPath();
-		path.column_family = "Nodes";
-		path.column = ByteBuffer.wrap("name".getBytes());
+		// Get the results.
+		rangeResults = client.get_indexed_slices(parent, indexClause, predicate, consistencyLevel);
 		
-		// Get the start node info
-		ColumnOrSuperColumn result = client.get(rowid, path, consistencyLevel);
-		System.out.println("Friends of friends for " + startNode + ":" + decoder.decode(result.column.value) + " are the following:");
+		// Print them out.
+		for (KeySlice key : rangeResults) {
+			//System.out.println(decoder.decode(key.bufferForKey()));
+			for (ColumnOrSuperColumn col : key.columns) {
+				String colName = decoder.decode(col.column.name).toString();
+				String colValue = decoder.decode(col.column.value).toString();
+				//System.out.println("\t" + colName + " -> " + colValue);
+				if (colName.contentEquals("end")) {
+					friends.add(colValue);
+				}
+			}
+		}
 		
-		// Get the friends of friends info
+		parent.column_family="Nodes";
+		
+		System.out.println("Friends of friends for " + startNode + " are the following:");
 		for (String f : foff) {
-			rowid = ByteBuffer.wrap(f.getBytes());
-			result = client.get(rowid, path, consistencyLevel);
-			System.out.println("\t" + f + ":" + decoder.decode(result.column.value));
+			System.out.println("\t" + f);
 		}
 		
 		// Clean up.

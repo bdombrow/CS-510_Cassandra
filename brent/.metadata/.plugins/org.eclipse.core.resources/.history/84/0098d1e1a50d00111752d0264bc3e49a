@@ -2,7 +2,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.List;
-import java.util.Scanner;
 import java.util.TreeSet;
 
 import org.apache.cassandra.thrift.*;
@@ -14,11 +13,7 @@ import org.apache.thrift.transport.TSocket;
 public class foff1 {
 	public static void main(String[] args) throws Exception {
 		
-		String startNode = "";
-		
-		Scanner input = new Scanner(System.in);
-		System.out.print("Starting Node #");
-		startNode = input.next();
+		String startNode = "1";
 	
 		// Set up decoder.
 		Charset charset = Charset.forName("UTF-8");
@@ -101,14 +96,13 @@ public class foff1 {
 		path.column = ByteBuffer.wrap("name".getBytes());
 		
 		// Get the start node info
-		ColumnOrSuperColumn result = client.get(rowid, path, consistencyLevel);
-		System.out.println("Friends of friends for " + startNode + ":" + decoder.decode(result.column.value) + " are the following:");
+		ColumnOrSuperColumn result = client.get(rowid, path, consistencyLevel)
 		
-		// Get the friends of friends info
+		System.out.println("Friends of friends for " + startNode + " are the following:");
 		for (String f : foff) {
 			rowid = ByteBuffer.wrap(f.getBytes());
 			result = client.get(rowid, path, consistencyLevel);
-			System.out.println("\t" + f + ":" + decoder.decode(result.column.value));
+			System.out.println("\t" + decoder.decode(result.column.value));
 		}
 		
 		// Clean up.

@@ -11,7 +11,7 @@ import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TSocket;
 
-public class foff1 {
+public class foff2 {
 	public static void main(String[] args) throws Exception {
 		
 		String startNode = "";
@@ -62,6 +62,21 @@ public class foff1 {
 		// The friends set.
 		TreeSet<String> friends = new TreeSet<String>();
 		
+		// Add them to the set
+		for (KeySlice key : rangeResults) {
+			for (ColumnOrSuperColumn col : key.columns) {
+				String colName = decoder.decode(col.column.name).toString();
+				String colValue = decoder.decode(col.column.value).toString();
+				if (colName.contentEquals("end")) {
+					friends.add(colValue);
+				}
+			}
+		}
+		
+		// Get the friends going the other way
+		indexExpression.column_name = ByteBuffer.wrap("end".getBytes("UTF-8"));
+		
+		rangeResults = client.get_indexed_slices(parent, indexClause, predicate, consistencyLevel);
 		// Add them to the set
 		for (KeySlice key : rangeResults) {
 			for (ColumnOrSuperColumn col : key.columns) {

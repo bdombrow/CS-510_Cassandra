@@ -2,7 +2,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.List;
-import java.util.Scanner;
 import java.util.TreeSet;
 
 import org.apache.cassandra.thrift.*;
@@ -14,11 +13,7 @@ import org.apache.thrift.transport.TSocket;
 public class foff1 {
 	public static void main(String[] args) throws Exception {
 		
-		String startNode = "";
-		
-		Scanner input = new Scanner(System.in);
-		System.out.print("Starting Node #");
-		startNode = input.next();
+		String startNode = "3";
 	
 		// Set up decoder.
 		Charset charset = Charset.forName("UTF-8");

@@ -11,7 +11,7 @@ import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TSocket;
 
-public class foff1 {
+public class foff2 {
 	public static void main(String[] args) throws Exception {
 		
 		String startNode = "";
@@ -72,6 +72,8 @@ public class foff1 {
 				}
 			}
 		}
+		
+		indexExpression.column_name = ByteBuffer.wrap("end".getBytes("UTF-8"));
 		
 		// The friends of friends set.
 		TreeSet<String> foff = new TreeSet<String>();
