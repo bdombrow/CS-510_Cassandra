@@ -45,9 +45,11 @@ public class foff1 {
 		SliceRange range = new SliceRange();
 		range.start = ByteBuffer.allocate(0);
 		range.finish = ByteBuffer.allocate(0);
-		//predicate.slice_range = range;
-		predicate.addToColumn_names(ByteBuffer.wrap("start".getBytes()));
-		predicate.addToColumn_names(ByteBuffer.wrap("end".getBytes()));
+		predicate.slice_range = range;
+		List<ByteBuffer> columnNames = null;
+		columnNames.add(ByteBuffer.wrap("start".getBytes()));
+		columnNames.add(ByteBuffer.wrap("end".getBytes()));
+		predicate.column_names = columnNames;
 		
 		List<ColumnOrSuperColumn> results = client.get_slice(rowid, parent, predicate, consistencyLevel);
 		
@@ -85,7 +87,7 @@ public class foff1 {
 		for (KeySlice key : rangeResults) {
 			System.out.println(decoder.decode(key.bufferForKey()));
 			for (ColumnOrSuperColumn col : key.columns) {
-				System.out.println("\t" + decoder.decode(col.column.name) + " -> " + decoder.decode(col.column.value));
+				System.out.println(decoder.decode(col.column.name) + " -> " + decoder.decode(col.column.value));
 			}
 		}
 		

@@ -23,7 +23,7 @@ public class foff1 {
 		client.set_keyspace("CDM");
 
 		// Define a column parent
-		ColumnParent parent = new ColumnParent("Edges");
+		ColumnParent parent = new ColumnParent("Nodes");
 		
 		// Define a row id
 		ByteBuffer rowid = ByteBuffer.wrap("33".getBytes());
@@ -43,11 +43,11 @@ public class foff1 {
 		// Read Entire row
 		SlicePredicate predicate = new SlicePredicate();
 		SliceRange range = new SliceRange();
-		range.start = ByteBuffer.allocate(0);
-		range.finish = ByteBuffer.allocate(0);
-		//predicate.slice_range = range;
-		predicate.addToColumn_names(ByteBuffer.wrap("start".getBytes()));
-		predicate.addToColumn_names(ByteBuffer.wrap("end".getBytes()));
+		ByteBuffer start = ByteBuffer.allocate(0);
+		ByteBuffer end = ByteBuffer.allocate(0);
+		range.start = start;
+		range.finish = end;
+		predicate.slice_range = range;
 		
 		List<ColumnOrSuperColumn> results = client.get_slice(rowid, parent, predicate, consistencyLevel);
 		
@@ -56,38 +56,25 @@ public class foff1 {
 			System.out.println(decoder.decode(columna.name) + " -> " + decoder.decode(columna.value));
 		}
 		
-//		// Range query
-//		KeyRange keyrange = new KeyRange();
-//		keyrange.start_token = "312d32";
-//		keyrange.end_token = "312d36";
-//		
-//		List<KeySlice> rangeResults = client.get_range_slices(parent, predicate, keyrange, consistencyLevel);
-//		
-//		for (KeySlice key : rangeResults) {
-//			System.out.println(decoder.decode(key.bufferForKey()));
-//			for (ColumnOrSuperColumn col : key.columns) {
-//				System.out.println(decoder.decode(col.column.name) + " -> " + decoder.decode(col.column.value));
-//			}
-//		}
+		// Range query
+		KeyRange keyrange = new KeyRange();
+		keyrange.start_token = "00000";
+		keyrange.end_token = "99999";
 		
-		// Index query
-		IndexExpression indexExpression = new IndexExpression();
-		indexExpression.column_name = ByteBuffer.wrap("start".getBytes("UTF-8"));
-		indexExpression.setOp(IndexOperator.EQ);
-		indexExpression.value = ByteBuffer.wrap("1".getBytes());
-			
-		IndexClause indexClause = new IndexClause();
-		indexClause.addToExpressions(indexExpression);
-		indexClause.start_key = ByteBuffer.allocate(0);
-
-		List<KeySlice> rangeResults = client.get_indexed_slices(parent, indexClause, predicate, consistencyLevel);
-
+		List<KeySlice> rangeResults = client.get_range_slices(parent, predicate, keyrange, consistencyLevel);
+		
 		for (KeySlice key : rangeResults) {
 			System.out.println(decoder.decode(key.bufferForKey()));
 			for (ColumnOrSuperColumn col : key.columns) {
-				System.out.println("\t" + decoder.decode(col.column.name) + " -> " + decoder.decode(col.column.value));
+				System.out.println(decoder.decode(col.column.name) + " -> " + decoder.decode(col.column.value));
 			}
 		}
+		
+		// Index query
+		IndexExpression indexExpression = new IndexExpression();
+		
+		IndexClause indexClause = new IndexClause();
+
 		
 		transport.flush();
 		transport.close();

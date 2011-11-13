@@ -43,11 +43,11 @@ public class foff1 {
 		// Read Entire row
 		SlicePredicate predicate = new SlicePredicate();
 		SliceRange range = new SliceRange();
-		range.start = ByteBuffer.allocate(0);
-		range.finish = ByteBuffer.allocate(0);
-		//predicate.slice_range = range;
-		predicate.addToColumn_names(ByteBuffer.wrap("start".getBytes()));
-		predicate.addToColumn_names(ByteBuffer.wrap("end".getBytes()));
+		ByteBuffer start = ByteBuffer.allocate(0);
+		ByteBuffer end = ByteBuffer.allocate(0);
+		range.start = start;
+		range.finish = end;
+		predicate.slice_range = range;
 		
 		List<ColumnOrSuperColumn> results = client.get_slice(rowid, parent, predicate, consistencyLevel);
 		
@@ -73,7 +73,7 @@ public class foff1 {
 		// Index query
 		IndexExpression indexExpression = new IndexExpression();
 		indexExpression.column_name = ByteBuffer.wrap("start".getBytes("UTF-8"));
-		indexExpression.setOp(IndexOperator.EQ);
+		indexExpression.setOp(IndexOperator.GTE);
 		indexExpression.value = ByteBuffer.wrap("1".getBytes());
 			
 		IndexClause indexClause = new IndexClause();
@@ -85,7 +85,7 @@ public class foff1 {
 		for (KeySlice key : rangeResults) {
 			System.out.println(decoder.decode(key.bufferForKey()));
 			for (ColumnOrSuperColumn col : key.columns) {
-				System.out.println("\t" + decoder.decode(col.column.name) + " -> " + decoder.decode(col.column.value));
+				System.out.println(decoder.decode(col.column.name) + " -> " + decoder.decode(col.column.value));
 			}
 		}
 		
