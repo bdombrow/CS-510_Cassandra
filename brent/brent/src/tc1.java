@@ -24,19 +24,86 @@ public class tc1 {
 		// Set the keyspace we are using.
 		client.set_keyspace("CDM");
 
-		ByteBuffer query = ByteBuffer.wrap("SELECT start, end FROM Edges;".getBytes());
-
-		CqlResult results = client.execute_cql_query(query, Compression.NONE);
+		// Need to find the highest numbered node	
+		int high_node = 14;
+		int[][] node_list = new int[high_node + 1][high_node + 1]; // Lazy and wasting space
+		int start_node = 0;
+		int end_node = 0;
 		
-		for (CqlRow row : results.getRows()) {
-			System.out.println("");
-			for (Column col : row.getColumns()) {
-				System.out.println(decoder.decode(col.name) + ":" + decoder.decode(col.value));		
-			}
-			
+		// Initialize, we can always get to ourself
+		for (int i = 0; i < high_node + 1; ++i) {
+				node_list[i][i] = 1;
 		}
 		
+		// Set the edege query and execute.
+		ByteBuffer query = ByteBuffer.wrap("SELECT start, end FROM Edges;".getBytes());
+		CqlResult results = client.execute_cql_query(query, Compression.NONE);
+		
+		// Go through all the edges and set the weights equal to 1
+		for (CqlRow row : results.getRows()) {
+			for (Column col : row.getColumns()) {
+				if (decoder.decode(col.name).toString().contentEquals("start")) {
+					start_node = Integer.parseInt(decoder.decode(col.value).toString());
+				} else {
+					end_node = Integer.parseInt(decoder.decode(col.value).toString());
+				}
+			}
+			node_list[start_node][end_node] = 1;
+			
+		}
+				
 		transport.flush();
 		transport.close();
+		
+		// Print out what we've got.		
+		System.out.print("\t");
+		for (int i =1; i < high_node + 1; ++i) {
+			System.out.print("\t" + i + ":");
+		}
+		System.out.print("\n");
+		
+		for (int i = 1; i < node_list.length; ++i ) {
+			System.out.print(i + "\t|");
+			for (int j = 1; j < node_list.length; ++j) {
+				System.out.print("\t" + node_list[i][j]);
+			}
+			System.out.print("\n");
+		}
+		
+		
+		// Calculate the transitive closure.
+		
+		/*
+		 * All paths are equal in this implementation.
+		 * Paths are directed.
+		 * 0 = no path.
+		 */
+		for (int k = 1; k < high_node + 1; ++k) {
+			for (int i = 1; i < high_node + 1; ++i) {
+				for (int j = 1; j < high_node + 1; ++j) {
+					if (node_list[i][k] + node_list[k][j] == 2) { // This is a path from [i][k] to [k][j]
+						node_list[i][j] = 1;
+					}
+				}
+			}
+		}
+		
+		
+		// Print out the results of the closure.
+		System.out.print("\n\t");
+		for (int i =1; i < high_node + 1; ++i) {
+			System.out.print("\t" + i + ":");
+		}
+		System.out.print("\n");
+		
+		for (int i = 1; i < node_list.length; ++i ) {
+			System.out.print(i + "\t|");
+			for (int j = 1; j < node_list.length; ++j) {
+				System.out.print("\t" + node_list[i][j]);
+			}
+			System.out.print("\n");
+		}
+		
+
 	}
 }
