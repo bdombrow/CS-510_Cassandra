@@ -2,6 +2,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.apache.cassandra.thrift.*;
 import org.apache.thrift.protocol.TProtocol;
@@ -11,84 +12,110 @@ import org.apache.thrift.transport.TSocket;
 
 public class foff1 {
 	public static void main(String[] args) throws Exception {
+		
+		String startNode = "1";
 	
+		// Set up decoder.
 		Charset charset = Charset.forName("UTF-8");
 		CharsetDecoder decoder = charset.newDecoder();
 	
+		// Set up connection.
 		TTransport transport = new TFramedTransport(new TSocket("10.9.73.119", 9160));
 		TProtocol protocol = new TBinaryProtocol(transport);
 		Cassandra.Client client = new Cassandra.Client(protocol);
 		transport.open();
 		
+		// Set the keyspace we are using.
 		client.set_keyspace("CDM");
 
-		// Define a column parent
+		// Set the parent of the column family
 		ColumnParent parent = new ColumnParent("Edges");
-		
-		// Define a row id
-		ByteBuffer rowid = ByteBuffer.wrap("33".getBytes());
 
 		// Set the consistency level
-		ConsistencyLevel consistencyLevel = ConsistencyLevel.ONE;
-		
-		// Read a column value
-		// The output is messed up. Need to figure out how to convert to string properly.
-//		ColumnPath path = new ColumnPath();
-//		path.column_family = "User";
-//		path.column = ByteBuffer.wrap("description".getBytes());
-//		ColumnOrSuperColumn answer = client.get(rowid, path, consistencyLevel);
-//		Column column = answer.column;
-//		System.out.println(decoder.decode(column.name) + ":" + decoder.decode(column.value));
-		
-		// Read Entire row
+		ConsistencyLevel consistencyLevel = ConsistencyLevel.ONE;	
+	
+		// Set up the predicate for what we want out of the query
 		SlicePredicate predicate = new SlicePredicate();
-		SliceRange range = new SliceRange();
-		range.start = ByteBuffer.allocate(0);
-		range.finish = ByteBuffer.allocate(0);
-		//predicate.slice_range = range;
 		predicate.addToColumn_names(ByteBuffer.wrap("start".getBytes()));
 		predicate.addToColumn_names(ByteBuffer.wrap("end".getBytes()));
 		
-		List<ColumnOrSuperColumn> results = client.get_slice(rowid, parent, predicate, consistencyLevel);
-		
-		for (ColumnOrSuperColumn result : results) {
-			Column columna = result.column;
-			System.out.println(decoder.decode(columna.name) + " -> " + decoder.decode(columna.value));
-		}
-		
-//		// Range query
-//		KeyRange keyrange = new KeyRange();
-//		keyrange.start_token = "312d32";
-//		keyrange.end_token = "312d36";
-//		
-//		List<KeySlice> rangeResults = client.get_range_slices(parent, predicate, keyrange, consistencyLevel);
-//		
-//		for (KeySlice key : rangeResults) {
-//			System.out.println(decoder.decode(key.bufferForKey()));
-//			for (ColumnOrSuperColumn col : key.columns) {
-//				System.out.println(decoder.decode(col.column.name) + " -> " + decoder.decode(col.column.value));
-//			}
-//		}
-		
-		// Index query
+		// Set the expression for the index query
 		IndexExpression indexExpression = new IndexExpression();
 		indexExpression.column_name = ByteBuffer.wrap("start".getBytes("UTF-8"));
 		indexExpression.setOp(IndexOperator.EQ);
-		indexExpression.value = ByteBuffer.wrap("1".getBytes());
-			
+		indexExpression.value = ByteBuffer.wrap(startNode.getBytes());
+		
+		// Create an IndexClause and add the index query to it.
 		IndexClause indexClause = new IndexClause();
 		indexClause.addToExpressions(indexExpression);
 		indexClause.start_key = ByteBuffer.allocate(0);
 
+		// Get the results.
 		List<KeySlice> rangeResults = client.get_indexed_slices(parent, indexClause, predicate, consistencyLevel);
 
+		// The friends set.
+		TreeSet<String> friends = new TreeSet<String>();
+		
+		// Print them out.
+		//System.out.println("Friends\n");
 		for (KeySlice key : rangeResults) {
-			System.out.println(decoder.decode(key.bufferForKey()));
+			//System.out.println(decoder.decode(key.bufferForKey()));
 			for (ColumnOrSuperColumn col : key.columns) {
-				System.out.println("\t" + decoder.decode(col.column.name) + " -> " + decoder.decode(col.column.value));
+				String colName = decoder.decode(col.column.name).toString();
+				String colValue = decoder.decode(col.column.value).toString();
+				//System.out.println("\t" + colName + " -> " + colValue);
+				if (colName.contentEquals("end")) {
+					friends.add(colValue);
+				}
 			}
 		}
 		
+		// The friends of friends set.
+		TreeSet<String> foff = new TreeSet<String>();
+		
+		// Get the friends of the friends.
+		//System.out.println("\nFriends of Friends\n");
+		for (String friend : friends) {
+			indexExpression.value = ByteBuffer.wrap(friend.getBytes());
+			
+			rangeResults = client.get_indexed_slices(parent, indexClause, predicate, consistencyLevel);
+			
+			// Print them out.
+			for (KeySlice key : rangeResults) {
+				//System.out.println(decoder.decode(key.bufferForKey()));
+				for (ColumnOrSuperColumn col : key.columns) {
+					String colName = decoder.decode(col.column.name).toString();
+					String colValue = decoder.decode(col.column.value).toString();
+					//System.out.println("\t" + colName + " -> " + colValue);
+					if (colName.contentEquals("end")) {
+						foff.add(colValue);
+					}
+				}
+			}
+		}
+		
+		// Get the results.
+		rangeResults = client.get_indexed_slices(parent, indexClause, predicate, consistencyLevel);
+		
+		// Print them out.
+		for (KeySlice key : rangeResults) {
+			//System.out.println(decoder.decode(key.bufferForKey()));
+			for (ColumnOrSuperColumn col : key.columns) {
+				String colName = decoder.decode(col.column.name).toString();
+				String colValue = decoder.decode(col.column.value).toString();
+				//System.out.println("\t" + colName + " -> " + colValue);
+				if (colName.contentEquals("end")) {
+					friends.add(colValue);
+				}
+			}
+		}
+		
+		System.out.println("Friends of friends for " + startNode + " are the following:");
+		for (String f : foff) {
+			System.out.println("\t" + f);
+		}
+		
+		// Clean up.
 		transport.flush();
 		transport.close();
 	}

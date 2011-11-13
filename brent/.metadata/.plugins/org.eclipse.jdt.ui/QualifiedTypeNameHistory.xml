@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="org.apache.cassandra.thrift.NotFoundException"/>
+<fullyQualifiedTypeName name="org.apache.cassandra.thrift.UnavailableException"/>
+<fullyQualifiedTypeName name="org.apache.cassandra.thrift.InvalidRequestException"/>
+<fullyQualifiedTypeName name="java.util.logging.Logger"/>
+<fullyQualifiedTypeName name="org.apache.cassandra.thrift.Cassandra"/>
+<fullyQualifiedTypeName name="org.apache.cassandra.thrift.Cassandra.Client"/>
+<fullyQualifiedTypeName name="org.apache.thrift.protocol.TProtocol"/>
+<fullyQualifiedTypeName name="org.apache.thrift.transport.TTransport"/>
+<fullyQualifiedTypeName name="org.apache.thrift.transport.TFramedTransport"/>
+<fullyQualifiedTypeName name="java.nio.ByteBuffer"/>
+<fullyQualifiedTypeName name="org.apache.thrift.TException"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="java.nio.charset.Charset"/>
+<fullyQualifiedTypeName name="java.nio.charset.CharsetDecoder"/>
+<fullyQualifiedTypeName name="java.lang.System"/>
+<fullyQualifiedTypeName name="java.util.TreeSet"/>
+</qualifiedTypeNameHistroy>

@@ -1,8 +1,0 @@
-import org.apache.thrift.transport.*;
-
-
-
-public class foff1 {
-	TTransport transport = new TFramedTransport(new TSocket("10.9.73.119", 9160));
-	
-}
