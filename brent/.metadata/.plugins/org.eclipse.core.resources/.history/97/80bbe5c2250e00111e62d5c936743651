@@ -24,7 +24,7 @@ public class tc1 {
 		// Set the keyspace we are using.
 		client.set_keyspace("CDM");
 
-		ByteBuffer query = ByteBuffer.wrap("SELECT start, end FROM Edges;".getBytes());
+		ByteBuffer query = ByteBuffer.wrap("SELECT * FROM Edges;".getBytes());
 
 		CqlResult results = client.execute_cql_query(query, Compression.NONE);
 		

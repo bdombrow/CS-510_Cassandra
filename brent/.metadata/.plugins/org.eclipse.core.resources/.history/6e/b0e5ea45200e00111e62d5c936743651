@@ -24,7 +24,14 @@ public class tc1 {
 		// Set the keyspace we are using.
 		client.set_keyspace("CDM");
 
-		ByteBuffer query = ByteBuffer.wrap("SELECT start, end FROM Edges;".getBytes());
+		// Set the parent of the column family
+		//ColumnParent parent = new ColumnParent();
+		//parent.column_family = "Edges";
+
+		// Set the consistency level
+		ConsistencyLevel consistencyLevel = ConsistencyLevel.ONE;
+
+		ByteBuffer query = ByteBuffer.wrap("SELECT * FROM Edges;".getBytes());
 
 		CqlResult results = client.execute_cql_query(query, Compression.NONE);
 		

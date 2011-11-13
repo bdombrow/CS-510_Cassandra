@@ -1,3 +1,5 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
@@ -9,7 +11,7 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TSocket;
 
 
-public class tc1 {
+public class cqlsh {
 	public static void main(String[] args) throws Exception {
 		// Set up decoder.
 		Charset charset = Charset.forName("UTF-8");
@@ -21,21 +23,34 @@ public class tc1 {
 		Cassandra.Client client = new Cassandra.Client(protocol);
 		transport.open();
 
-		// Set the keyspace we are using.
-		client.set_keyspace("CDM");
+		ByteBuffer query;
+		boolean go = true;
+		String input = "";
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-		ByteBuffer query = ByteBuffer.wrap("SELECT start, end FROM Edges;".getBytes());
 
-		CqlResult results = client.execute_cql_query(query, Compression.NONE);
-		
-		for (CqlRow row : results.getRows()) {
-			System.out.println("");
-			for (Column col : row.getColumns()) {
-				System.out.println(decoder.decode(col.name) + ":" + decoder.decode(col.value));		
+		while (go) {
+			System.out.print("cqlsh> ");
+			input = br.readLine();
+
+
+			if (input.contentEquals("quit")) {
+				go = false;
+			} else {
+				query = ByteBuffer.wrap(input.getBytes());
+
+				CqlResult results = client.execute_cql_query(query, Compression.NONE);
+
+				for (CqlRow row : results.getRows()) {
+					System.out.println("");
+					for (Column col : row.getColumns()) {
+						System.out.println(decoder.decode(col.name) + ":" + decoder.decode(col.value));		
+					}
+
+				}
 			}
-			
+
 		}
-		
 		transport.flush();
 		transport.close();
 	}
