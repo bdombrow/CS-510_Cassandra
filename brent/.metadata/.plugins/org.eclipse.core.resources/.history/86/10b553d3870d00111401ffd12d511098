@@ -1,0 +1,51 @@
+import java.nio.ByteBuffer;
+
+import org.apache.cassandra.thrift.*;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TFramedTransport;
+import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TSocket;
+
+public class foff1 {
+	public static void main(String[] args) throws Exception {
+		TTransport transport = new TFramedTransport(new TSocket("10.9.73.119", 9160));
+		TProtocol protocol = new TBinaryProtocol(transport);
+		Cassandra.Client client = new Cassandra.Client(protocol);
+		transport.open();
+		
+		client.set_keyspace("tutorials");
+
+		// Define a column parent
+		ColumnParent parent = new ColumnParent("User");
+		
+		// Define a row id
+		ByteBuffer rowid = ByteBuffer.wrap("0100".getBytes());
+
+		// Define a column to add
+		Column description = new Column();
+		description.setName("description".getBytes());
+		description.setValue("I'm a nice guy".getBytes());
+		description.setTimestamp(System.currentTimeMillis());
+
+		ConsistencyLevel consistencyLevel = ConsistencyLevel.ONE;
+
+		client.insert(rowid, parent, description, consistencyLevel);
+		
+		description.setName("username".getBytes());
+		description.setValue("abelperez".getBytes());
+		
+		client.insert(rowid, parent, description, consistencyLevel);
+		
+		description.setName("password".getBytes());
+		description.setValue("drowssap".getBytes());
+		
+		client.insert(rowid, parent, description, consistencyLevel);
+		
+		ColumnPath path = new ColumnPath("User", "username".getBytes("UTF-8"));
+		System.out.println(client.get(rowid, path, consistencyLevel));
+		
+		
+		transport.flush();
+		transport.close();
+	}
+}

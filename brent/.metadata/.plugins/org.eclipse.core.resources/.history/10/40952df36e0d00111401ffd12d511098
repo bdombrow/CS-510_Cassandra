@@ -1,0 +1,73 @@
+import java.util.List;
+import java.util.logging.Logger;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+
+import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TFramedTransport;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.TException;
+import org.apache.cassandra.service.*;
+import org.apache.cassandra.thrift.*;
+
+public class foff1 {
+	// set up some constants
+	private static final String UTF8 = "UTF8";
+	private static final String HOST = "localhost";
+	private static final int PORT = 9160;
+	private static final ConsistencyLevel CL = ConsistencyLevel.ONE;
+
+	// not paying attention to exceptions here
+	public static void main(String[] args) throws UnsupportedEncodingException,
+			InvalidRequestException, UnavailableException, TimedOutException,
+			TException, NotFoundException {
+
+		TTransport tr = new TSocket(HOST, PORT); // new default in 0.7 is framed
+													// transport
+		TFramedTransport tf = new TFramedTransport(tr);
+		TProtocol proto = new TBinaryProtocol(tf);
+		Cassandra.Client client = new Cassandra.Client(proto);
+		tf.open();
+		client.set_keyspace("Keyspace1");
+		String cfName = "Standard1";
+		ByteBuffer userIDKey;
+		userIDKey.put("1".getBytes());
+		//byte[] userIDKey = "1".getBytes(); // this is a row key
+
+		// create a representation of the Name column
+		ColumnPath colPathName = new ColumnPath(cfName);
+		colPathName.setColumn("name".getBytes(UTF8));
+		ColumnParent cp = new ColumnParent(cfName);
+
+		// insert the name column
+		client.insert(userIDKey, cp, new Column("name".getBytes(UTF8), "George Clinton".getBytes()), CL);
+
+		// insert the Age column
+		client.insert(userIDKey, cp,
+				new Column("age".getBytes(UTF8), "69".getBytes()), CL);
+
+		// read just the Name column
+
+		Column col = client.get(userIDKey, colPathName, CL).getColumn();
+
+		// create a slice predicate representing the columns to read
+		// start and finish are the range of columns--here, all
+		SlicePredicate predicate = new SlicePredicate();
+		SliceRange sliceRange = new SliceRange();
+		sliceRange.setStart(new byte[0]);
+		sliceRange.setFinish(new byte[0]);
+		predicate.setSlice_range(sliceRange);
+
+		// read all columns in the row
+		ColumnParent parent = new ColumnParent(cfName);
+		List<ColumnOrSuperColumn> results = client.get_slice(userIDKey, parent,
+				predicate, CL);
+
+		// loop over columns, outputting values
+		for (ColumnOrSuperColumn result : results) {
+			Column column = result.column;
+		}
+	}
+}
