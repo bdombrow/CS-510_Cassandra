@@ -35,7 +35,7 @@ public class foff2 {
 
 		// Set the parent of the column family
 		ColumnParent parent = new ColumnParent();
-		parent.column_family = "Edges";
+		parent.column_family = "WEdges";
 
 		// Set the consistency level
 		ConsistencyLevel consistencyLevel = ConsistencyLevel.ONE;	

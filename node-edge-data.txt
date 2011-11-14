@@ -1,0 +1,269 @@
+create keyspace CDM;
+use CDM;
+
+create column family Nodes with
+  comparator = UTF8Type and
+  column_metadata =
+  [
+    {column_name: name, validation_class: UTF8Type, index_type: KEYS},
+		{column_name: gender, validation_class: UTF8Type},
+		{column_name: occupation, validation_class: UTF8Type},
+    {column_name: connections, validation_class: UTF8Type}
+  ];
+
+assume Nodes keys as utf8;
+
+set Nodes['1']['name'] = 'George Bluth, Sr.';
+set Nodes['1']['gender'] = 'male';
+set Nodes['1']['occupation'] = 'Fugitive';
+
+set Nodes['2']['name'] = 'Oscar Bluth';
+set Nodes['2']['gender'] = 'male';
+
+set Nodes['3']['name'] = 'George Oscar "GOB" Bluth';
+set Nodes['3']['gender'] = 'male';
+set Nodes['3']['occupation'] = 'Magician';
+
+set Nodes['4']['name'] = 'Tobias Fünke';
+set Nodes['4']['gender'] = 'male';
+set Nodes['5']['occupation'] = 'Unemployed Actor';
+
+set Nodes['5']['name'] = 'Lindsay Fünke';
+set Nodes['5']['gender'] = 'female';
+set Nodes['5']['occupation'] = 'Activist';
+
+set Nodes['6']['name'] = 'Lucille Bluth';
+set Nodes['6']['gender'] = 'female';
+
+set Nodes['7']['name'] = 'Byron "Buster" Bluth';
+set Nodes['7']['gender'] = 'male';
+set Nodes['7']['occupation'] = 'Seal Victim';
+
+set Nodes['8']['name'] = 'Michael Bluth';
+set Nodes['8']['gender'] = 'male';
+set Nodes['8']['occupation'] = 'Bluth Company CEO';
+
+set Nodes['9']['name'] = 'George Michael Bluth';
+set Nodes['9']['gender'] = 'male';
+set Nodes['9']['occupation'] = 'Student';
+
+set Nodes['10']['name'] = 'Tracy Bluth';
+set Nodes['10']['gender'] = 'female';
+
+set Nodes['11']['name'] = 'Mae "Maeby" Fünke';
+set Nodes['11']['gender'] = 'female';
+set Nodes['11']['occupation'] = 'Student';
+
+set Nodes['12']['name'] = 'Surely Woolfbeek';
+set Nodes['12']['gender'] = 'female';
+set Nodes['12']['occupation'] = 'Imaginary Character';
+
+set Nodes['13']['name'] = 'Steve Holt';
+set Nodes['13']['gender'] = 'male';
+set Nodes['13']['occupation'] = 'Student';
+
+set Nodes['14']['name'] = 'Eve Holt';
+set Nodes['14']['gender'] = 'female';
+
+create column family Edges with
+  comparator = UTF8Type and
+  column_metadata =
+  [
+    {column_name: start, validation_class: UTF8Type, index_type: KEYS},
+    {column_name: end, validation_class: UTF8Type, index_type: KEYS},
+    {column_name: weight, validation_class: UTF8Type},
+	{column_name: relation, validation_class: UTF8Type},
+  ];
+
+assume Edges keys as utf8;
+
+set Edges['1-2']['start'] = '1';
+set Edges['1-2']['end'] = '2';
+set Edges['1-2']['relationship'] = 'brother';
+
+set Edges['1-6']['start'] = '1';
+set Edges['1-6']['end'] = '6';
+set Edges['1-6']['relationship'] = 'wife';
+
+set Edges['2-3']['start'] = '2';
+set Edges['2-3']['end'] = '3';
+set Edges['2-3']['relationship'] = 'uncle';
+
+set Edges['4-5']['start'] = '4';
+set Edges['4-5']['end'] = '5';
+set Edges['4-5']['relationship'] = 'husband';
+
+set Edges['6-7']['start'] = '6';
+set Edges['6-7']['end'] = '7';
+set Edges['6-7']['relationship'] = 'mother';
+
+set Edges['3-8']['start'] = '3';
+set Edges['3-8']['end'] = '8';
+set Edges['3-8']['relationship'] = 'brother';
+
+set Edges['5-8']['start'] = '5';
+set Edges['5-8']['end'] = '8';
+set Edges['5-8']['relationship'] = 'sister';
+
+set Edges['7-8']['start'] = '7';
+set Edges['7-8']['end'] = '8';
+set Edges['7-8']['relationship'] = 'brother';
+
+set Edges['8-9']['start'] = '8';
+set Edges['8-9']['end'] = '9';
+set Edges['8-9']['relationship'] = 'father';
+
+set Edges['9-10']['start'] = '9';
+set Edges['9-10']['end'] = '10';
+set Edges['9-10']['relationship'] = 'son';
+
+set Edges['9-11']['start'] = '9';
+set Edges['9-11']['end'] = '11';
+set Edges['9-11']['relationship'] = 'cousin';
+
+set Edges['11-12']['start'] = '11';
+set Edges['11-12']['end'] = '12';
+set Edges['11-12']['relationship'] = 'alter ego';
+
+set Edges['1-4']['start'] = '1';
+set Edges['1-4']['end'] = '4';
+set Edges['1-4']['relationship'] = 'father in law';
+
+set Edges['13-14']['start'] = '13';
+set Edges['13-14']['end'] = '14';
+set Edges['13-14']['relationship'] = 'son';
+
+set Edges['2-1']['start'] = '2';
+set Edges['2-1']['end'] = '1';
+set Edges['2-1']['relationship'] = 'brother';
+
+set Edges['6-1']['start'] = '6';
+set Edges['6-1']['end'] = '1';
+set Edges['6-1']['relationship'] = 'husband';
+
+set Edges['3-2']['start'] = '3';
+set Edges['3-2']['end'] = '2';
+set Edges['3-2']['relationship'] = 'nephew';
+
+set Edges['5-4']['start'] = '5';
+set Edges['5-4']['end'] = '4';
+set Edges['5-4']['relationship'] = 'wife';
+
+set Edges['7-6']['start'] = '7';
+set Edges['7-6']['end'] = '6';
+set Edges['7-6']['relationship'] = 'son';
+
+set Edges['8-3']['start'] = '8';
+set Edges['8-3']['end'] = '3';
+set Edges['8-3']['relationship'] = 'brother';
+
+set Edges['8-5']['start'] = '8';
+set Edges['8-5']['end'] = '5';
+set Edges['8-5']['relationship'] = 'sister';
+
+set Edges['8-7']['start'] = '8';
+set Edges['8-7']['end'] = '7';
+set Edges['8-7']['relationship'] = 'brother';
+
+set Edges['9-8']['start'] = '9';
+set Edges['9-8']['end'] = '8';
+set Edges['9-8']['relationship'] = 'son';
+
+set Edges['10-9']['start'] = '10';
+set Edges['10-9']['end'] = '9';
+set Edges['10-9']['relationship'] = 'mother';
+
+set Edges['11-9']['start'] = '11';
+set Edges['11-9']['end'] = '9';
+set Edges['11-9']['relationship'] = 'cousin';
+
+set Edges['4-1']['start'] = '4';
+set Edges['4-1']['end'] = '1';
+set Edges['4-1']['relationship'] = 'son in law';
+
+set Edges['14-13']['start'] = '14';
+set Edges['14-13']['end'] = '13';
+set Edges['14-13']['relationship'] = 'mother';
+
+create column family WEdges with
+  comparator = UTF8Type and
+  column_metadata =
+  [
+    {column_name: start, validation_class: UTF8Type, index_type: KEYS},
+    {column_name: end, validation_class: UTF8Type, index_type: KEYS},
+    {column_name: weight, validation_class: UTF8Type},
+	{column_name: relation, validation_class: UTF8Type},
+  ];
+
+assume WEdges keys as utf8;
+
+set WEdges['1-2']['start'] = '1';
+set WEdges['1-2']['end'] = '2';
+set WEdges['1-2']['relationship'] = 'brother';
+set WEdges['1-2']['weight'] = '0.15';
+
+set WEdges['1-6']['start'] = '1';
+set WEdges['1-6']['end'] = '6';
+set WEdges['1-6']['relationship'] = 'wife/husband';
+set WEdges['1-6']['weight'] = '0.48';
+
+set WEdges['2-3']['start'] = '2';
+set WEdges['2-3']['end'] = '3';
+set WEdges['2-3']['relationship'] = 'uncle/nephew';
+set WEdges['2-3']['weight'] = '0.5';
+
+set WEdges['4-5']['start'] = '4';
+set WEdges['4-5']['end'] = '5';
+set WEdges['4-5']['relationship'] = 'husband/wife';
+set WEdges['4-5']['weight'] = '0.03';
+
+set WEdges['6-7']['start'] = '6';
+set WEdges['6-7']['end'] = '7';
+set WEdges['6-7']['relationship'] = 'mother/son';
+set WEdges['6-7']['weight'] = '0.86';
+
+set WEdges['3-8']['start'] = '3';
+set WEdges['3-8']['end'] = '8';
+set WEdges['3-8']['relationship'] = 'brother';
+set WEdges['3-8']['weight'] = '0.9';
+
+set WEdges['5-8']['start'] = '5';
+set WEdges['5-8']['end'] = '8';
+set WEdges['5-8']['relationship'] = 'sister';
+set WEdges['5-8']['weight'] = '0.65';
+
+set WEdges['7-8']['start'] = '7';
+set WEdges['7-8']['end'] = '8';
+set WEdges['7-8']['relationship'] = 'brother';
+set WEdges['7-8']['weight'] = '0.27';
+
+set WEdges['8-9']['start'] = '8';
+set WEdges['8-9']['end'] = '9';
+set WEdges['8-9']['relationship'] = 'father/son';
+set WEdges['8-9']['weight'] = '0.54';
+
+set WEdges['9-10']['start'] = '9';
+set WEdges['9-10']['end'] = '10';
+set WEdges['9-10']['relationship'] = 'son/mother';
+set WEdges['9-10']['weight'] = '0.94';
+
+set WEdges['9-11']['start'] = '9';
+set WEdges['9-11']['end'] = '11';
+set WEdges['9-11']['relationship'] = 'cousin,maybe';
+set WEdges['9-11']['weight'] = '0.87';
+
+set WEdges['11-12']['start'] = '11';
+set WEdges['11-12']['end'] = '12';
+set WEdges['11-12']['relationship'] = 'alter ego';
+set WEdges['11-12']['weight'] = '0.19';
+
+set WEdges['1-4']['start'] = '1';
+set WEdges['1-4']['end'] = '4';
+set WEdges['1-4']['relationship'] = 'father/son in law';
+set WEdges['1-4']['weight'] = '0.72';
+
+set WEdges['13-14']['start'] = '13';
+set WEdges['13-14']['end'] = '14';
+set WEdges['13-14']['relationship'] = 'son';
+set WEdges['13-14']['weight'] = '0.57';
+
