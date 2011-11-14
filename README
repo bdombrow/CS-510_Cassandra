@@ -1,2 +1,10 @@
 Java implementations of the graph algorithms.
 
+The file node-edge-data.txt contains the node and egde data suitable for importing into Cassandra.
+
+>cassandra-cli -h <host> -f node-edge-data.txt
+
+This will create 3 column families:
+Nodes - The node metadata
+Edges - Directed, unweighted edges
+WEdges - Undirected, weighted edges. There are only edges for one direction.
