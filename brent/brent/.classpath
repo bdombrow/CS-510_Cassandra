@@ -2,30 +2,31 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/apache-cassandra-1.0.2.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/apache-cassandra-clientutil-1.0.2.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/apache-cassandra-thrift-1.0.2.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/antlr-3.2.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/avro-1.4.0-fixes.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/avro-1.4.0-sources-fixes.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/commons-cli-1.1.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/commons-codec-1.2.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/commons-lang-2.4.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/compress-lzf-0.8.4.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/concurrentlinkedhashmap-lru-1.2.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/guava-r08.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/high-scale-lib-1.1.2.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/jackson-core-asl-1.4.0.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/jackson-mapper-asl-1.4.0.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/jamm-0.2.5.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/jline-0.9.94.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/json-simple-1.1.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/libthrift-0.6.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/log4j-1.2.16.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/servlet-api-2.5-20081211.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/slf4j-api-1.6.1.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/slf4j-log4j12-1.6.1.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/snakeyaml-1.6.jar"/>
-	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib/snappy-java-1.0.4.1.jar"/>
+	<classpathentry kind="lib" path="antlr-3.2.jar"/>
+	<classpathentry kind="lib" path="apache-cassandra-1.0.2.jar"/>
+	<classpathentry kind="lib" path="apache-cassandra-clientutil-1.0.2.jar"/>
+	<classpathentry kind="lib" path="apache-cassandra-thrift-1.0.2.jar"/>
+	<classpathentry kind="lib" path="avro-1.4.0-fixes.jar"/>
+	<classpathentry kind="lib" path="avro-1.4.0-sources-fixes.jar"/>
+	<classpathentry kind="lib" path="commons-cli-1.1.jar"/>
+	<classpathentry kind="lib" path="commons-codec-1.2.jar"/>
+	<classpathentry kind="lib" path="commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="compress-lzf-0.8.4.jar"/>
+	<classpathentry kind="lib" path="concurrentlinkedhashmap-lru-1.2.jar"/>
+	<classpathentry kind="lib" path="guava-r08.jar"/>
+	<classpathentry kind="lib" path="high-scale-lib-1.1.2.jar"/>
+	<classpathentry kind="lib" path="jackson-core-asl-1.4.0.jar"/>
+	<classpathentry kind="lib" path="jackson-mapper-asl-1.4.0.jar"/>
+	<classpathentry kind="lib" path="jamm-0.2.5.jar"/>
+	<classpathentry kind="lib" path="jline-0.9.94.jar"/>
+	<classpathentry kind="lib" path="json-simple-1.1.jar"/>
+	<classpathentry kind="lib" path="libthrift-0.6.jar"/>
+	<classpathentry kind="lib" path="libthrift-0.8.0-snapshot.jar"/>
+	<classpathentry kind="lib" path="log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="servlet-api-2.5-20081211.jar"/>
+	<classpathentry kind="lib" path="slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="slf4j-log4j12-1.6.1.jar"/>
+	<classpathentry kind="lib" path="snakeyaml-1.6.jar"/>
+	<classpathentry kind="lib" path="snappy-java-1.0.4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
