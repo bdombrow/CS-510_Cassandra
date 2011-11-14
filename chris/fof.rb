@@ -1,4 +1,9 @@
 # friends of friends
+# 
+# queries all edge keys from Edges column family and generates list of edges and list of nodes
+# iterates over nodes and collects friends from edge_keys
+# iterates over all friends for each node and collects friends of the friends
+# result is collected in a hash keyed by node_id
 
 # nodes
 # column_metadata =
