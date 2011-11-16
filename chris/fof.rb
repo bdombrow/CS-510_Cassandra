@@ -10,8 +10,7 @@
 # [
 #   {column_name: name, validation_class: UTF8Type, index_type: KEYS},
 #   {column_name: gender, validation_class: UTF8Type},
-#   {column_name: occupation, validation_class: UTF8Type},
-#   {column_name: connections, validation_class: UTF8Type}
+#   {column_name: occupation, validation_class: UTF8Type}
 # ];
 
 # edges
@@ -26,20 +25,23 @@
 require 'rubygems'
 require 'cassandra'
 require 'pp'
+#require 'java'
 
 # connect to server
 client = Cassandra.new('CDM', '127.0.0.1:9160')
 
+start_time = Time.now
+
 # collect all edge keys
 edge_keys = []
 client.each(:Edges) { |key| edge_keys << key }
-puts "", "EDGES"
-pp edge_keys
+#puts "", "EDGES"
+#pp edge_keys
 
 # generate list of nodes based on edge_keys
 node_ids = edge_keys.collect { |key| key.split('-') }.flatten.uniq
-puts "", "NODES"
-pp node_ids
+#puts "", "NODES"
+#pp node_ids
 
 # friends and friends of friends will be stored in hash, keyed by node id
 fof = {}
@@ -56,8 +58,8 @@ end
 
 fof.each_pair {|nid, friends| fof[nid] = friends.uniq}
 
-puts "", "friends have been computed!"
-pp fof
+#puts "", "friends have been computed!"
+#pp fof
 
 # fof hash now contains friend ids for each node
 # a la {'1' => ['2', '4', '5'], '6' => []}
@@ -77,6 +79,9 @@ end
 threads.each { |t|  t.join }
 
 fof.each_pair {|nid, friends| fof[nid] = friends.uniq}
+end_time = Time.now
 
-puts "", "friends of friends have been computed!"
+#puts "", "friends of friends have been computed!"
 pp fof
+
+puts "runtime: #{end_time - start_time} seconds"
