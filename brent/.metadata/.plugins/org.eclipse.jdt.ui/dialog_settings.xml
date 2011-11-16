@@ -21,12 +21,16 @@
 	<section name="BuildPathsPropertyPage">
 		<item value="2" key="pageIndex"/>
 	</section>
+	<section name="RefactoringWizard.preview">
+		<item value="400" key="height"/>
+		<item value="600" key="width"/>
+	</section>
 	<section name="FatJarPackageWizard">
 		<item value="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/cqlsh.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
-		<item value="cqlsh - brent" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
+		<item value="cqlsh (1) - cqlsh" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
 		<item value="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/cqlsh.xml" key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION"/>
 		<item value="false" key="FatJarPackageWizardPage.ANTSCRIPT_SAVE"/>
-		<item value="1" key="FatJarPackageWizardPage.LIBRARY_HANDLING"/>
+		<item value="2" key="FatJarPackageWizardPage.LIBRARY_HANDLING"/>
 		<list key="FatJarPackageWizardPage.DESTINATION_NAMES_ID">
 			<item value="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/cqlsh.jar"/>
 		</list>
@@ -34,10 +38,6 @@
 			<item value="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/cqlsh.xml"/>
 			<item value=".xml"/>
 		</list>
-	</section>
-	<section name="RefactoringWizard.preview">
-		<item value="400" key="height"/>
-		<item value="600" key="width"/>
 	</section>
 	<section name="quick_assist_proposal_size">
 	</section>
