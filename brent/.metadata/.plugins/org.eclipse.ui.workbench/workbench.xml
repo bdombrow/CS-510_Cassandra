@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<workbench progressCount="28" version="2.0">
+<workbench progressCount="22" version="2.0">
 <workbenchAdvisor/>
 <window height="768" maximized="true" width="1024" x="0" y="33">
 <fastViewData fastViewLocation="1024"/>
@@ -34,20 +34,35 @@
 <folder appearance="1" expanded="2">
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
 <part id="0"/>
+<part id="1"/>
+<part id="2"/>
+<part id="3"/>
 </presentation>
 </folder>
 </info>
 </editorArea>
-<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="cqlsh.java" partName="cqlsh.java" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/Project/CS-510_Cassandra/brent/cqlsh/src/cqlsh/cqlsh.java" title="cqlsh.java" tooltip="cqlsh/src/cqlsh/cqlsh.java" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/cqlsh/src/cqlsh/cqlsh.java"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="832" selectionTopPixel="0"/>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="tc2.java" partName="tc2.java" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/Project/CS-510_Cassandra/brent/brent/src/tc2.java" title="tc2.java" tooltip="brent/src/tc2.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/brent/src/tc2.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
+</editor>
+<editor activePart="true" focus="true" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="sb1.java" partName="sb1.java" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/Project/CS-510_Cassandra/brent/brent/src/sb1.java" title="sb1.java" tooltip="brent/src/sb1.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/brent/src/sb1.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="4094" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Bridges.java" partName="Bridges.java" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/Project/CS-510_Cassandra/brent/brent/src/Bridges.java" title="Bridges.java" tooltip="brent/src/Bridges.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/brent/src/Bridges.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
+</editor>
+<editor id="org.eclipse.jdt.ui.CompilationUnitEditor" name="tc1.java" partName="tc1.java" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/Project/CS-510_Cassandra/brent/brent/src/tc1.java" title="tc1.java" tooltip="brent/src/tc1.java" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/brent/src/tc1.java"/>
+<editorState selectionHorizontalPixel="0" selectionLength="117" selectionOffset="2459" selectionTopPixel="648"/>
 </editor>
 </editors>
 <views>
 <view id="org.eclipse.ui.views.ProblemView" partName="Problems">
 <viewState PRIMARY_SORT_FIELD="org.eclipse.ui.ide.severityAndDescriptionField" categoryGroup="org.eclipse.ui.ide.severity" markerContentGenerator="org.eclipse.ui.ide.problemsGenerator" partName="Problems">
 <expanded>
-<category IMemento.internal.id="Errors (16 items)"/>
+<category IMemento.internal.id="Errors (5 items)"/>
 </expanded>
 <columnWidths org.eclipse.ui.ide.locationField="90" org.eclipse.ui.ide.markerType="90" org.eclipse.ui.ide.pathField="120" org.eclipse.ui.ide.resourceField="90" org.eclipse.ui.ide.severityAndDescriptionField="300"/>
 <visible IMemento.internal.id="org.eclipse.ui.ide.severityAndDescriptionField"/>
@@ -110,7 +125,7 @@
 <view id="org.eclipse.jdt.ui.SourceView" partName="Declaration"/>
 <view id="org.eclipse.jdt.ui.JavadocView" partName="Javadoc"/>
 </views>
-<perspectives activePart="org.eclipse.jdt.ui.PackageExplorer" activePerspective="org.eclipse.jdt.ui.JavaPerspective">
+<perspectives activePart="org.eclipse.jdt.ui.CompilationUnitEditor" activePerspective="org.eclipse.jdt.ui.JavaPerspective">
 <perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
 <descriptor class="org.eclipse.jdt.internal.ui.JavaPerspectiveFactory" id="org.eclipse.jdt.ui.JavaPerspective" label="Java"/>
 <alwaysOnActionSet id="org.eclipse.egit.ui.navigation"/>
@@ -184,7 +199,7 @@
 <view id="org.eclipse.ui.views.ProblemView" ratio="0.3"/>
 <view id="org.eclipse.jdt.ui.JavadocView" ratio="0.3"/>
 <view id="org.eclipse.jdt.ui.SourceView" ratio="0.3"/>
-<view id="org.eclipse.ui.console.ConsoleView" ratio="0.2972583"/>
+<view id="org.eclipse.ui.console.ConsoleView" ratio="0.6151163"/>
 </fastViews>
 </fastViewBar>
 <fastViewBar fastViewLocation="131072" id="org.eclipse.ui.internal.ViewStack@15dcc3ca" orientation="512" selectedTabId="org.eclipse.mylyn.tasks.ui.views.tasks" style="0">
@@ -257,17 +272,158 @@
 <workingSets/>
 <navigationHistory>
 <editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/cqlsh/src/cqlsh.java"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/cqlsh/src/cqlsh/cqlsh.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/brent/src/sb1.java"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" path="/brent/src/tc1.java"/>
 </editors>
-<item historyLabel="cqlsh.java" index="0">
-<position info="not_deleted" x="0" y="0"/>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="6264" y="0"/>
 </item>
-<item historyLabel="cqlsh.java" index="1">
-<position info="not_deleted" x="15" y="0"/>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="5608" y="18"/>
 </item>
-<item active="true" historyLabel="cqlsh.java" index="1">
-<position info="not_deleted" x="832" y="0"/>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="5641" y="17"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="5684" y="21"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="5901" y="30"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="1399" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="1401" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="1414" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="1416" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2497" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2499" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2510" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2512" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2710" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2691" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2618" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2626" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2686" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2637" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2053" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2053" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2746" y="0"/>
+</item>
+<item historyLabel="tc1.java" index="1">
+<position info="not_deleted" x="2459" y="117"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2746" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="1276" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="3909" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="2053" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="1738" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="1782" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="1824" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="1998" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="1875" y="0"/>
+</item>
+<item historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="1791" y="0"/>
+</item>
+<item active="true" historyLabel="sb1.java" index="0">
+<position info="not_deleted" x="3624" y="0"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
@@ -292,20 +448,26 @@
 </trimLayout>
 </window>
 <mruList>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="tc1.java" tooltip="brent/src/tc1.java">
+<persistable path="/brent/src/tc1.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="Bridges.java" tooltip="brent/src/Bridges.java">
+<persistable path="/brent/src/Bridges.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="sb1.java" tooltip="brent/src/sb1.java">
+<persistable path="/brent/src/sb1.java"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="tc2.java" tooltip="brent/src/tc2.java">
+<persistable path="/brent/src/tc2.java"/>
+</file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="cqlsh.java" tooltip="cqlsh/src/cqlsh.java">
 <persistable path="/cqlsh/src/cqlsh.java"/>
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="cqlsh.java" tooltip="brent/src/cqlsh.java">
 <persistable path="/brent/src/cqlsh.java"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="tc2.java" tooltip="brent/src/tc2.java">
-<persistable path="/brent/src/tc2.java"/>
-</file>
 <file factoryID="org.eclipse.jdt.ui.ClassFileEditorInputFactory" id="org.eclipse.jdt.ui.ClassFileEditor" name="Cassandra$execute_cql_query_args.class" tooltip="org.apache.cassandra.thrift.Cassandra$execute_cql_query_args">
 <persistable org.eclipse.jdt.ui.ClassFileIdentifier="=brent/\/Users\/brent\/Documents\/Education\/PSU\/Grad School\/2011 Fall\/CS-510-Cloud\/apache-cassandra-1.0.2\/lib\/apache-cassandra-thrift-1.0.2.jar&lt;org.apache.cassandra.thrift(Cassandra$execute_cql_query_args.class"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="tc1.java" tooltip="brent/src/tc1.java">
-<persistable path="/brent/src/tc1.java"/>
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.jdt.ui.CompilationUnitEditor" name="foff2.java" tooltip="brent/src/foff2.java">
 <persistable path="/brent/src/foff2.java"/>
