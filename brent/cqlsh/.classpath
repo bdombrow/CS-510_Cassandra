@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/Project/CS-510_Cassandra/brent/brent/apache-cassandra-thrift-1.0.2.jar"/>
+	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/Project/CS-510_Cassandra/brent/brent/libthrift-0.6.jar"/>
+	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/Project/CS-510_Cassandra/brent/brent/slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/Project/CS-510_Cassandra/brent/brent/slf4j-log4j12-1.6.1.jar"/>
+	<classpathentry kind="lib" path="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/Project/CS-510_Cassandra/brent/brent/log4j-1.2.16.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

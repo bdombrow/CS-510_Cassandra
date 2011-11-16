@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move element &apos;cqlsh.java&apos; to &apos;cqlsh/src/cqlsh&apos;&#x0A;- Original project: &apos;cqlsh&apos;&#x0A;- Destination element: &apos;cqlsh/src/cqlsh&apos;&#x0A;- Original element: &apos;cqlsh.java&apos;&#x0A;- Update references to refactored element" description="Move compilation unit" destination="/src&lt;cqlsh" element1="/src&lt;{cqlsh.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.move" policy="org.eclipse.jdt.ui.moveResources" qualified="false" references="true" stamp="1321399320406" units="1" version="1.0"/>
+</session>

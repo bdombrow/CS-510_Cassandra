@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
-	<item value="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/apache-cassandra-1.0.2/lib" key="org.eclipse.jdt.ui.lastextjar"/>
+	<item value="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/Project/CS-510_Cassandra/brent/brent" key="org.eclipse.jdt.ui.lastextjar"/>
 	<section name="OptionalMessageDialog.hide.">
+		<item value="false" key="RunnableJar.export.ipwarning"/>
 		<item value="true" key="org.eclipse.jdt.ui.typecomment.deprecated"/>
 	</section>
 	<section name="org.eclipse.jdt.internal.ui.packageview.PackageExplorerPart">
@@ -17,16 +18,15 @@
 	</section>
 	<section name="JavaElementSearchActions">
 	</section>
-	<section name="RefactoringWizard.preview">
-		<item value="400" key="height"/>
-		<item value="600" key="width"/>
+	<section name="BuildPathsPropertyPage">
+		<item value="2" key="pageIndex"/>
 	</section>
 	<section name="FatJarPackageWizard">
 		<item value="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/cqlsh.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
 		<item value="cqlsh - brent" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
 		<item value="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/cqlsh.xml" key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION"/>
 		<item value="false" key="FatJarPackageWizardPage.ANTSCRIPT_SAVE"/>
-		<item value="2" key="FatJarPackageWizardPage.LIBRARY_HANDLING"/>
+		<item value="1" key="FatJarPackageWizardPage.LIBRARY_HANDLING"/>
 		<list key="FatJarPackageWizardPage.DESTINATION_NAMES_ID">
 			<item value="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/cqlsh.jar"/>
 		</list>
@@ -34,6 +34,10 @@
 			<item value="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/cqlsh.xml"/>
 			<item value=".xml"/>
 		</list>
+	</section>
+	<section name="RefactoringWizard.preview">
+		<item value="400" key="height"/>
+		<item value="600" key="width"/>
 	</section>
 	<section name="quick_assist_proposal_size">
 	</section>
