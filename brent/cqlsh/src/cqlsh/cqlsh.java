@@ -60,10 +60,7 @@ public class cqlsh {
 
 					}
 				} catch (Exception e) {
-					if (e.getCause() != null)
-						System.out.println("Exception: " +e.toString() + ":" + e.getMessage());
-					else
-						System.out.println("(No Results)");
+						System.out.println("Exception: " +e.toString() + " -> " + e.getMessage());
 				}
 			}
 

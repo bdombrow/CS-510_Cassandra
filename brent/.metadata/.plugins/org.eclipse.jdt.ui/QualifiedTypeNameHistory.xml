@@ -5,7 +5,6 @@
 <fullyQualifiedTypeName name="org.apache.cassandra.thrift.InvalidRequestException"/>
 <fullyQualifiedTypeName name="java.util.logging.Logger"/>
 <fullyQualifiedTypeName name="org.apache.cassandra.thrift.Cassandra"/>
-<fullyQualifiedTypeName name="org.apache.cassandra.thrift.Cassandra.Client"/>
 <fullyQualifiedTypeName name="org.apache.thrift.protocol.TProtocol"/>
 <fullyQualifiedTypeName name="org.apache.thrift.transport.TTransport"/>
 <fullyQualifiedTypeName name="org.apache.thrift.transport.TFramedTransport"/>
@@ -26,5 +25,7 @@
 <fullyQualifiedTypeName name="java.io.ObjectInputStream"/>
 <fullyQualifiedTypeName name="java.io.ByteArrayOutputStream"/>
 <fullyQualifiedTypeName name="java.io.ByteArrayInputStream"/>
+<fullyQualifiedTypeName name="org.apache.cassandra.thrift.Cassandra.Client"/>
+<fullyQualifiedTypeName name="java.util.Vector"/>
 <fullyQualifiedTypeName name="java.util.Stack"/>
 </qualifiedTypeNameHistroy>

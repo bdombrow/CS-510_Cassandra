@@ -1,0 +1,200 @@
+/*
+ * Brute force bridges.
+ * 
+ * This thing is not memory efficient.
+ */
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.util.List;
+import java.util.Stack;
+import java.util.Vector;
+
+import org.apache.cassandra.thrift.*;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TFramedTransport;
+import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TSocket;
+
+
+public class BridgesTarBD {
+	static String host = "localhost";
+	static int port = 9160;
+	static boolean undirected = true;
+	// Set up decoder.
+	static Charset charset = Charset.forName("UTF-8");
+	static CharsetDecoder decoder = charset.newDecoder();
+	static TTransport transport;
+	static TProtocol protocol;
+	static Cassandra.Client client;
+
+	public static void main(String[] args) throws Exception {
+		// Set the host from the args
+		if (args.length == 1) {
+			host = args[0];
+		}
+		
+		// Set up the connection
+		transport = new TFramedTransport(new TSocket(host, port));
+		protocol = new TBinaryProtocol(transport);
+		client = new Cassandra.Client(protocol);
+		transport.open();
+
+		// Set the keyspace we are using.
+		client.set_keyspace("CDM");
+
+		// Get the nodes
+		Vector<String> nodeVector = new Vector<String>();
+		getNodes(nodeVector);
+			
+		// Find the spanning trees
+		Stack<Vector<String>> spanningTrees = new Stack<Vector<String>>();
+		
+		while(nodeVector.size() != 0) {
+			Vector<String> edgeVector = new Vector<String>();
+			String start = nodeVector.firstElement();
+			nodeVector.remove(0);
+			dfs(start, nodeVector, edgeVector);
+			spanningTrees.push(edgeVector);
+		}
+		
+		// Print out the spanning trees
+		for (Vector<String> tree : spanningTrees) {
+			System.out.println(tree);
+		}
+		
+		// The hard part.
+		
+		// We have a stack of rooted spanning trees, they are indexed in preorder in the vector.
+		
+		/*
+		 * Trying to play along with
+		 * 	http://en.wikipedia.org/wiki/Bridge_(graph_theory)
+		 * 
+		 * For each node from Vi (leaves) to 1 (root)
+		 * 	1. Compute the number of descendants ND(V)
+		 *  2. Compute L(V) and H(V)
+		 *  3. For each W where V is the parent of W
+		 *  	If L(W) = W and H(W) < W + ND(W) then (V,W) is a bridge
+		 *  
+		 *  ND(V) = 1 + Sum ND(W) = number of descendants including itself.
+		 *  L(V) = ???
+		 *  H(V) = ???
+		 *  
+		 */
+
+		transport.flush();
+		transport.close();
+	}
+	
+	private static void dfs(String start, Vector<String> nodes, Vector<String> edges) throws Exception {
+		Vector<String> ends = new Vector<String>();
+		
+		// Get the ends
+		getEnds(start, ends);
+		
+		// See if there are any
+		while (ends.size() != 0) {
+			// Extract the first one
+			String newStart = ends.firstElement();
+			ends.remove(0);
+			
+			// See if we have been there before
+			while ((!vectorContains(newStart, nodes)) && (ends.size() != 0)) {
+				// We've been there, pop it
+				newStart = ends.firstElement();
+				ends.remove(0);
+			}
+			
+			// If we haven't been there, add the edge and recurse
+			if (vectorContains(newStart, nodes)) {
+				edges.add(start + "-" + newStart);
+				nodes.remove(newStart);
+				dfs(newStart, nodes, edges);
+			}
+		}
+		return;
+	}
+	
+	private static boolean vectorContains(String string, Vector<String> vector) {
+		for (String element : vector) {
+			if (element.contentEquals(string)) return true;
+		}
+		
+		return false;
+	}
+	
+	private static void getEnds(String start, Vector<String> ends) throws Exception {
+		// Set the edge query and execute.
+		String queryText = "SELECT end from Edges where start = " + start + ";";
+		ByteBuffer query = ByteBuffer.wrap(queryText.getBytes());
+		CqlResult results = client.execute_cql_query(query, Compression.NONE);
+
+		// Get all the edges
+		List<CqlRow> rows = results.getRows();
+		for (CqlRow row : rows) {
+			for (Column col : row.columns) {
+				String colName = decoder.decode(col.name).toString();
+				String colValue = decoder.decode(col.value).toString();
+				
+				if (colName.contentEquals("end")) {
+					ends.add(colValue);
+				}
+				
+			}
+		}
+	}
+	
+	private static void getNodes(Vector<String> vector) throws Exception {
+		// Set the edge query and execute.
+		String queryText = "SELECT key from Nodes;";
+		ByteBuffer query = ByteBuffer.wrap(queryText.getBytes());
+		CqlResult results = client.execute_cql_query(query, Compression.NONE);
+
+		// Get all the edges
+		List<CqlRow> rows = results.getRows();
+		for (CqlRow row : rows) {
+			vector.add(decoder.decode(row.key).toString());
+		}
+	}
+
+
+	/* Object cloner taken from http://www.javaworld.com/javaworld/javatips/jw-javatip76.html?page=2
+	 * 
+	 */
+
+	static public Object deepCopy(Object oldObj) throws Exception
+	{
+		ObjectOutputStream oos = null;
+		ObjectInputStream ois = null;
+		try
+		{
+			ByteArrayOutputStream bos = 
+					new ByteArrayOutputStream(); // A
+			oos = new ObjectOutputStream(bos); // B
+			// serialize and pass the object
+			oos.writeObject(oldObj);   // C
+			oos.flush();               // D
+			ByteArrayInputStream bin = 
+					new ByteArrayInputStream(bos.toByteArray()); // E
+			ois = new ObjectInputStream(bin);                  // F
+			// return the new object
+			return ois.readObject(); // G
+		}
+		catch(Exception e)
+		{
+			System.out.println("Exception in ObjectCloner = " + e);
+			throw(e);
+		}
+		finally
+		{
+			oos.close();
+			ois.close();
+		}
+	}
+}
