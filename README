@@ -10,9 +10,9 @@ Edges - Directed, unweighted edges
 WEdges - Undirected, weighted edges. There are only edges for one direction.
 
 Compiling:
-Add the cassandra jar files via brent -> Properties -> Java Build Path -> Libraries -> Add External JARs...
+Add the cassandra jar files via brent -> Properties -> Java Build Path -> Libraries -> Add JARs...
 
-I think Eclipse might be silly and use absolute paths for this.
+*** DON'T use Add External JARs because that will use absolute local paths specific to your machine!
 
 cqlsh.jar is a runnable cql client. Pass the host as an argument. It's really primitive.
 >java -jar cqlsh.jar localhost

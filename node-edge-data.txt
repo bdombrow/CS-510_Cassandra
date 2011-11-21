@@ -24,11 +24,11 @@ set Nodes['3']['name'] = 'George Oscar "GOB" Bluth';
 set Nodes['3']['gender'] = 'male';
 set Nodes['3']['occupation'] = 'Magician';
 
-set Nodes['4']['name'] = 'Tobias FÃ¼nke';
+set Nodes['4']['name'] = 'Tobias Fünke';
 set Nodes['4']['gender'] = 'male';
 set Nodes['5']['occupation'] = 'Unemployed Actor';
 
-set Nodes['5']['name'] = 'Lindsay FÃ¼nke';
+set Nodes['5']['name'] = 'Lindsay Fünke';
 set Nodes['5']['gender'] = 'female';
 set Nodes['5']['occupation'] = 'Activist';
 
@@ -50,7 +50,7 @@ set Nodes['9']['occupation'] = 'Student';
 set Nodes['10']['name'] = 'Tracy Bluth';
 set Nodes['10']['gender'] = 'female';
 
-set Nodes['11']['name'] = 'Mae "Maeby" FÃ¼nke';
+set Nodes['11']['name'] = 'Mae "Maeby" Fünke';
 set Nodes['11']['gender'] = 'female';
 set Nodes['11']['occupation'] = 'Student';
 
