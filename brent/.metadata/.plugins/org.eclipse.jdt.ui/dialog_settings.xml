@@ -14,6 +14,9 @@
 	</section>
 	<section name="JavaElementSearchActions">
 	</section>
+	<section name="BuildPathsPropertyPage">
+		<item value="2" key="pageIndex"/>
+	</section>
 	<section name="FatJarPackageWizard">
 		<item value="/Users/brent/Documents/Education/PSU/Grad School/2011 Fall/CS-510-Cloud/cqlsh.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
 		<item value="cqlsh (1) - cqlsh" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
@@ -27,10 +30,10 @@
 			<item value=".xml"/>
 		</list>
 	</section>
-	<section name="org.eclipse.ltk.ui.refactoring.settings">
+	<section name="quick_assist_proposal_size">
 	</section>
 	<section name="RenameInformationPopup">
 	</section>
-	<section name="quick_assist_proposal_size">
+	<section name="org.eclipse.ltk.ui.refactoring.settings">
 	</section>
 </section>

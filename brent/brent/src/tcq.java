@@ -1,3 +1,14 @@
+/*
+ * Transitive Closure for un-weighted, directed graph.
+ * 
+ * This method trades memory usage for queries, it is noticeably slower.
+ * 
+ * The getHighNode method will require enough memory to hold all the nodes.
+ * 
+ * The copy Edges will need enough space to hold the maximum edges associated with a single node.
+ * 
+ */
+
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
@@ -15,6 +26,7 @@ public class tcq {
 	static private TTransport transport;
 	static private TProtocol protocol;
 	static private Cassandra.Client client;
+	static private final Compression compression = Compression.NONE;
 
 	static private String host;
 
@@ -38,42 +50,118 @@ public class tcq {
 
 		// Need to find the highest numbered node	
 		int highNode = getHighNode();
-		System.out.println("High node is " + highNode);
+		
+		System.out.println("Setting up output Column Family TC.");
+		
+		// Drop the output column family
+		ByteBuffer query = ByteBuffer.wrap("DROP COLUMNFAMILY TC;".getBytes());
+		try {
+			client.execute_cql_query(query, compression);
+		} catch (Exception e){
+			if (e.toString().contentEquals("InvalidRequestException(why:CF is not defined in that keyspace.)")) {
+				// Ignore the exception if the column family doesn't exists
+			} else {
+			throw e;
+			}
+		}
+			
+		// Create a column family for the results
+		query = ByteBuffer.wrap("CREATE COLUMNFAMILY TC (key varchar PRIMARY KEY, start varchar, end varchar, weight varchar);".getBytes());
+		CqlResult results = client.execute_cql_query(query, compression); // Returns null if 
 
-		// Copy the Edges to the TC graph
+		query = ByteBuffer.wrap("CREATE INDEX ON TC (start);".getBytes());
+		results = client.execute_cql_query(query, compression);
+		
+		query = ByteBuffer.wrap("CREATE INDEX ON TC (end);".getBytes());
+		results = client.execute_cql_query(query, compression);
+		
+		query = ByteBuffer.wrap("CREATE INDEX ON TC (weight);".getBytes());
+		results = client.execute_cql_query(query, compression);
+
+		System.out.println("Copying existing edges.");
+		
+		/*
+		 *  Copy the Edges to the TC graph
+		 *  
+		 *  Go through each node and find all the connected nodes.
+		 *  Add the node - connected node edges to the transitive closure.
+		 *  
+		 */
 		for (int i = 1; i <= highNode; ++i) {
-			ByteBuffer query = ByteBuffer.wrap(("SELECT end FROM Edges WHERE start = " + i + ";").getBytes());
-			CqlResult results = client.execute_cql_query(query, Compression.NONE);
+			query = ByteBuffer.wrap(("SELECT end FROM Edges WHERE start = " + i + ";").getBytes());
+			results = client.execute_cql_query(query, compression);
 			if (!results.rows.isEmpty()){
 				for (CqlRow row : results.getRows()) {
 					for (Column col : row.getColumns()) {
 						String name = decoder.decode(col.name).toString();
 						String value = decoder.decode(col.value).toString();
 						if (name.contentEquals("end")) {
-							System.out.println("INSERT INTO TC (key, start, end) VALUES (\'" + i + "-" + value + "\',\'" + i + "\',\'" + value +"\');");
-							query = ByteBuffer.wrap(("INSERT INTO TC (key, start, end) VALUES (\'" + i + "-" + value + "\',\'" + i + "\',\'" + value +"\');").getBytes());
-							client.execute_cql_query(query, Compression.NONE);
+							query = ByteBuffer.wrap(("INSERT INTO TC ('key', 'start', 'end', 'weight') VALUES (\'" + i + "-" + value + "\',\'" + i + "\',\'" + value +"\', '2');").getBytes());
+							client.execute_cql_query(query, compression);
 						}
 					}
 				}
 			}
 		}
 
-
-
-
-
+		System.out.println("Calculating Transitive Closure.");
+		
 		// Calculate the transitive closure.
+		
+		/*
+		 * All paths are equal in this implementation.
+		 * Paths are directed.
+		 */
+		for (int k = 0; k < highNode; ++k) {
+			for (int i = 0; i < highNode; ++i) {
+				for (int j = 0; j < highNode; ++j) {
+					if (path(i,k) && path (k,j)) { // This is a path from [i][k] to [k][j]
+						insertPath(i, j);
+					}
+				}
+			}
+		}
 
 		transport.flush();
 		transport.close();
+		
+		System.out.println("Finished. Results in Column Family TC.");
 
 	}
+	/*
+	 * See if there is an edge from i to j.
+	 * 
+	 */
+	private static boolean path(int i, int j) throws Exception{
+		ByteBuffer query = ByteBuffer.wrap(("SELECT key FROM TC WHERE start = " + i + " and end = " + j + ";").getBytes());
+		CqlResult results = client.execute_cql_query(query, compression);
+		if (results.rows.size() > 0) {
+			return true;
+		}
+		return false;
+		
+	}
 
+	/*
+	 * Add a path from i to j in the transitive closure
+	 * 
+	 * The weight is set to 2 for the transitive edges
+	 * 
+	 * Throws an exception if something went wrong.
+	 */
+	private static void insertPath(int i, int j) throws Exception{
+		ByteBuffer query = ByteBuffer.wrap(("INSERT INTO TC ('key', 'start', 'end', 'weight') VALUES ('" + i + "=" + j + "', '" + i + "', '" + j + "', '1');" ).getBytes());
+		client.execute_cql_query(query, compression);
+	}
 
+	/*
+	 * Find the highest numbered node in the graph
+	 * 
+	 * Throws an exception if something went wrong.
+	 */
 	private static int getHighNode() throws Exception{
 		ByteBuffer query = ByteBuffer.wrap("SELECT key FROM Nodes;".getBytes());
-		CqlResult results = client.execute_cql_query(query, Compression.NONE);
+		CqlResult results = client.execute_cql_query(query, compression);
 		int high = 0;
 
 		// Go through the results and find the highest numbered node

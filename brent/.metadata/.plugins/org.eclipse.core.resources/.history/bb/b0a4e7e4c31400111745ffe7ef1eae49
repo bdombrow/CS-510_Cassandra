@@ -1,0 +1,92 @@
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+
+import org.apache.cassandra.thrift.*;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TFramedTransport;
+import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TSocket;
+
+
+public class tcq {
+
+	// Connection variables
+	static private TTransport transport;
+	static private TProtocol protocol;
+	static private Cassandra.Client client;
+
+	static private String host;
+
+	// Set up the decoder
+	static CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
+
+
+	public static void main(String[] args) throws Exception {
+
+		if (args.length == 1)
+			host = args[0];
+
+		// Set up connection.
+		transport = new TFramedTransport(new TSocket(host, 9160));
+		protocol = new TBinaryProtocol(transport);
+		client = new Cassandra.Client(protocol);
+		transport.open();
+
+		// Set the keyspace we are using.
+		client.set_keyspace("CDM");
+
+		// Need to find the highest numbered node	
+		int highNode = getHighNode();
+		System.out.println("High node is " + highNode);
+
+		// Copy the Edges to the TC graph
+		for (int i = 1; i <= highNode; ++i) {
+			ByteBuffer query = ByteBuffer.wrap(("SELECT end FROM Edges WHERE start = " + i + ";").getBytes());
+			CqlResult results = client.execute_cql_query(query, Compression.NONE);
+			if (!results.rows.isEmpty()){
+				for (CqlRow row : results.getRows()) {
+					for (Column col : row.getColumns()) {
+						String name = decoder.decode(col.name).toString();
+						String value = decoder.decode(col.value).toString();
+						if (name.contentEquals("end")) {
+							System.out.println("INSERT INTO TC (key, start, end) VALUES (\'" + i + "-" + value + "\',\'" + i + "\',\'" + value +"\');");
+							query = ByteBuffer.wrap(("INSERT INTO TC (key, start, end) VALUES (\'" + i + "-" + value + "\',\'" + i + "\',\'" + value +"\');").getBytes());
+							client.execute_cql_query(query, Compression.NONE);
+						}
+					}
+				}
+			}
+		}
+
+
+
+
+
+		// Calculate the transitive closure.
+
+		transport.flush();
+		transport.close();
+
+	}
+
+
+	private static int getHighNode() throws Exception{
+		ByteBuffer query = ByteBuffer.wrap("SELECT key FROM Nodes;".getBytes());
+		CqlResult results = client.execute_cql_query(query, Compression.NONE);
+		int high = 0;
+
+		// Go through the results and find the highest numbered node
+		for (CqlRow row : results.getRows()) {
+			for (Column col : row.getColumns()) {
+				String name = decoder.decode(col.name).toString();
+				int value = Integer.parseInt(decoder.decode(col.value).toString());
+				if (name.contentEquals("key")) {
+					if (value > high) high = value;
+				}
+			}
+		}
+
+		return high;
+	}
+}

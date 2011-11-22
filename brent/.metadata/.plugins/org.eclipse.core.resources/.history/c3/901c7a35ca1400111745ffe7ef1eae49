@@ -1,0 +1,132 @@
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+
+import org.apache.cassandra.thrift.*;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TFramedTransport;
+import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TSocket;
+
+
+public class tcq {
+
+	// Connection variables
+	static private TTransport transport;
+	static private TProtocol protocol;
+	static private Cassandra.Client client;
+	static private final Compression compression = Compression.NONE;
+
+	static private String host;
+
+	// Set up the decoder
+	static CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
+
+
+	public static void main(String[] args) throws Exception {
+
+		if (args.length == 1)
+			host = args[0];
+
+		// Set up connection.
+		transport = new TFramedTransport(new TSocket(host, 9160));
+		protocol = new TBinaryProtocol(transport);
+		client = new Cassandra.Client(protocol);
+		transport.open();
+
+		// Set the keyspace we are using.
+		client.set_keyspace("CDM");
+
+		// Need to find the highest numbered node	
+		int highNode = getHighNode();
+		System.out.println("High node is " + highNode);
+		
+		// Create a column family for the results
+		ByteBuffer query = ByteBuffer.wrap("CREATE COLUMNFAMILY TC (key varchar PRIMARY KEY, start varchar, end varchar, weight varchar);".getBytes());
+		CqlResult results = client.execute_cql_query(query, compression); // Returns null if 
+
+		query = ByteBuffer.wrap("CREATE INDEX ON TC (start);".getBytes());
+		results = client.execute_cql_query(query, compression);
+		
+		query = ByteBuffer.wrap("CREATE INDEX ON TC (end);".getBytes());
+		results = client.execute_cql_query(query, compression);
+
+		// Copy the Edges to the TC graph
+		for (int i = 1; i <= highNode; ++i) {
+			query = ByteBuffer.wrap(("SELECT end FROM Edges WHERE start = " + i + ";").getBytes());
+			results = client.execute_cql_query(query, compression);
+			if (!results.rows.isEmpty()){
+				for (CqlRow row : results.getRows()) {
+					for (Column col : row.getColumns()) {
+						String name = decoder.decode(col.name).toString();
+						String value = decoder.decode(col.value).toString();
+						if (name.contentEquals("end")) {
+							System.out.println("INSERT INTO TC ('key', 'start', 'end', 'weight') VALUES (\'" + i + "-" + value + "\',\'" + i + "\',\'" + value +"\', '1');");
+							query = ByteBuffer.wrap(("INSERT INTO TC ('key', 'start', 'end', 'weight') VALUES (\'" + i + "-" + value + "\',\'" + i + "\',\'" + value +"\', '1');").getBytes());
+							client.execute_cql_query(query, compression);
+						}
+					}
+				}
+			}
+		}
+
+		// Calculate the transitive closure.
+		
+		/*
+		 * All paths are equal in this implementation.
+		 * Paths are directed.
+		 */
+		for (int k = 0; k < highNode; ++k) {
+			for (int i = 0; i < highNode; ++i) {
+				for (int j = 0; j < highNode; ++j) {
+					if (path(i,k) && path (k,j)) { // This is a path from [i][k] to [k][j]
+						insertPath(i, j);
+					}
+				}
+			}
+		}
+
+
+
+		// Calculate the transitive closure.
+
+		transport.flush();
+		transport.close();
+
+	}
+	
+	private static boolean path(int i, int j) throws Exception{
+		ByteBuffer query = ByteBuffer.wrap(("SELECT key FROM TC WHERE start = " + i + " and end = " + j + ";").getBytes());
+		CqlResult results = client.execute_cql_query(query, compression);
+		if (results.rows.size() > 0) {
+			return true;
+		}
+		return false;
+		
+	}
+
+	
+	private static void insertPath(int i, int j) throws Exception{
+		ByteBuffer query = ByteBuffer.wrap(("INSERT INTO TC ('key', 'start', 'end', 'weight') VALUES ('" + i + "=" + j + "', '" + i + "', '" + j + "', '1');" ).getBytes());
+		client.execute_cql_query(query, compression);
+	}
+
+	private static int getHighNode() throws Exception{
+		ByteBuffer query = ByteBuffer.wrap("SELECT key FROM Nodes;".getBytes());
+		CqlResult results = client.execute_cql_query(query, compression);
+		int high = 0;
+
+		// Go through the results and find the highest numbered node
+		for (CqlRow row : results.getRows()) {
+			for (Column col : row.getColumns()) {
+				String name = decoder.decode(col.name).toString();
+				int value = Integer.parseInt(decoder.decode(col.value).toString());
+				if (name.contentEquals("key")) {
+					if (value > high) high = value;
+				}
+			}
+		}
+
+		return high;
+	}
+}

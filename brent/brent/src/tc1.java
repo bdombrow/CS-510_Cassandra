@@ -7,6 +7,7 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TSocket;
+import org.xerial.*;
 
 
 public class tc1 {
@@ -16,7 +17,7 @@ public class tc1 {
 		CharsetDecoder decoder = charset.newDecoder();
 
 		// Set up connection.
-		TTransport transport = new TFramedTransport(new TSocket("10.9.73.119", 9160));
+		TTransport transport = new TFramedTransport(new TSocket("172.16.83.139", 9160));
 		TProtocol protocol = new TBinaryProtocol(transport);
 		Cassandra.Client client = new Cassandra.Client(protocol);
 		transport.open();

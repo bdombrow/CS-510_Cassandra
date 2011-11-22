@@ -4,26 +4,26 @@
 		<item value="310" key="DIALOG_Y_ORIGIN"/>
 		<item value="345" key="DIALOG_X_ORIGIN"/>
 	</section>
-	<section name="ExternalProjectImportWizard">
-		<item value="false" key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED"/>
-		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
-	</section>
 	<section name="WORKBENCH_SETTINGS">
 		<list key="ENABLED_TRANSFERS">
 		</list>
 	</section>
+	<section name="ExternalProjectImportWizard">
+		<item value="false" key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED"/>
+		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
+	</section>
 	<section name="SaveAsDialogSettings">
 		<item value="526" key="DIALOG_WIDTH"/>
 		<item value="22" key="DIALOG_Y_ORIGIN"/>
-		<item value="377" key="DIALOG_X_ORIGIN"/>
 		<item value="529" key="DIALOG_HEIGHT"/>
+		<item value="377" key="DIALOG_X_ORIGIN"/>
 		<item value="1|Lucida Grande|11.0|0|COCOA|1|LucidaGrande" key="DIALOG_FONT_NAME"/>
 	</section>
 	<section name="CleanDialogSettings">
 		<item value="484" key="DIALOG_WIDTH"/>
 		<item value="175" key="DIALOG_Y_ORIGIN"/>
-		<item value="354" key="DIALOG_HEIGHT"/>
 		<item value="400" key="DIALOG_X_ORIGIN"/>
+		<item value="354" key="DIALOG_HEIGHT"/>
 		<item value="false" key="TOGGLE_SELECTED"/>
 	</section>
 </section>
