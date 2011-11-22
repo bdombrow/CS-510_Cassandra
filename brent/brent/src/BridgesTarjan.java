@@ -1,8 +1,6 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -26,8 +24,8 @@ import org.apache.thrift.transport.TTransport;
 /**
  * SCC.java
  * 
- * This program reads a list of edges in from the user, constructs a graph from
- * these edges, and then uses Trajan's algorithm for detecting strongly-
+ * This program reads a list of edges in from a database, constructs a graph 
+ * from these edges, and then uses Trajan's algorithm for detecting strongly-
  * connected components to print out each SCC found.  
  * 
  * It does so in two steps:
@@ -51,32 +49,28 @@ public class BridgesTarjan {
 	 * as the key, and the node object itself is the value.
 	 */
 	static class Graph {
+
+		static HashMap<Integer, Node> nodeList;		
 		
-		public Graph() {
-						
+		public Graph() {						
 			nodeList = new HashMap<Integer, Node>();
 		}
 		
-		public void addNode (Node n) {
-			
+		public void addNode (Node n) {			
 			nodeList.put(n.name, n);
 		}
 
-		public boolean hasNode (int n) {
-			
+		public boolean hasNode (int n) {			
 			return (nodeList.containsKey(n));
 		}
 		
-		public Node getNode (int n) {
-			
+		public Node getNode (int n) {			
 			return nodeList.get(n);
 		}
 		
 		public Set<Integer> nodeList () {
 			return nodeList.keySet();
 		}
-		
-		static HashMap<Integer, Node> nodeList;
 	}
 	
 	/**
@@ -120,16 +114,19 @@ public class BridgesTarjan {
 	static Stack<Node> stack = new Stack<Node>();
 	static int index;
 	static int numSCCs;
+	static LinkedList<LinkedList<Integer>> SCClist;
+	final static String COLUMN_FAMILY = "Edges";
 	
 	/**
 	 * main() serves as the driver to doTarjan(), which is the actual algorithm
-	 * implementation.  Main() processes the keyboard input, constructs the
+	 * implementation.  Main() processes the database input, constructs the
 	 * graph, and makes the call to doTarjan().
 	 */
 	public static void main (String args[]) {
 		
 		int entryNode = 0;
 		numSCCs = 1;
+		SCClist = new LinkedList<LinkedList<Integer>>();
 
 		String temp = "";
 
@@ -160,6 +157,9 @@ public class BridgesTarjan {
 	
 		// Loop until there are no more query results to process.
 		
+		System.out.println();
+		System.out.println("Found the following edges in the database: ");
+		System.out.println("--------------------------------------------");
 		while (!edgeList.isEmpty()) {
 			try {
 				
@@ -210,6 +210,14 @@ public class BridgesTarjan {
 				System.err.println(e);
 			}
 		}
+		
+		// Close the database now that we're finished.
+		try {
+			db.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		System.out.println();
 		
 		// **********************************
@@ -219,6 +227,9 @@ public class BridgesTarjan {
 		System.out.println("Tarjan's SCC Algorithm: ");
 		System.out.println("****************************************");
 		doTarjan(true);
+		printBridges();
+		SCClist.clear();
+		System.out.println();		
 		
 		// **********************************************************
 		// Pass 2:  Modified Tarjan's Algorithm (removing singletons)
@@ -230,6 +241,38 @@ public class BridgesTarjan {
 		System.out.println("Tarjan's SCC Algorithm, no singletons: ");
 		System.out.println("****************************************");		
 		doTarjan(false);
+		printBridges();
+		SCClist.clear();		
+	}
+	
+	/**
+	 * printBridges() uses the list of SCCs collected by doTarjan() to print
+	 * out any bridge edges resulting from that SCC.  It does so by iterating
+	 * through each node in the SCC, and checking that node's edges to see if
+	 * any of the endpoints are nodes not in the SCC.  If so, that means that
+	 * this edge connects to a part of the graph outside of this SCC and is
+	 * thus a bridge edge.  That edge is then printed out. 
+	 */
+	private static void printBridges() {
+		
+		int counter = 0;
+		
+		while (!SCClist.isEmpty()) {
+			
+			LinkedList<Integer> temp = SCClist.remove(0);
+			counter++;
+			
+			for (Integer i : temp) {
+				
+				Node n = graph.getNode(i);
+				
+				for (Integer e : n.edgeList) {
+					if (!temp.contains(e)) {
+						System.out.println("Bridge edge for SCC " + counter + ": " + i + "-" + e);
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -308,11 +351,13 @@ public class BridgesTarjan {
 				
 			} while (w.name != n.name);
 			
+			SCClist.add(scc);
+			
 			// If the SCC only contains one node, do not print it unless it
 			// actually *is* a SCC (it has an edge to itself).  In this case,
 			// the SCC is simply cleared.
 			
-			if (scc.size() == 1) {
+			if (!trackSingletons && scc.size() == 1) {
 				if (!graph.getNode(scc.get(0)).hasEdge(scc.get(0))) {
 					scc.clear();
 				}
@@ -347,11 +392,15 @@ public class BridgesTarjan {
 		}
 	}
 	
+	/**
+	 * A simple helper class for a Cassandra database connection.
+	 */
 	static class DBHelper {
 		
 		List<KeySlice> results;
 		TTransport transport;
 		
+		// Constructor.
 		public DBHelper () throws Exception {
 
 			// Set up connection.
@@ -365,12 +414,12 @@ public class BridgesTarjan {
 
 			// Set the parent of the column family
 			ColumnParent parent = new ColumnParent();
-			parent.column_family = "Edges";
+			parent.column_family = COLUMN_FAMILY;
 
 			// Set the consistency level
 			ConsistencyLevel consistencyLevel = ConsistencyLevel.ONE;
 		
-			// Ask for 100 results from "Edges" (all results, in our case)
+			// Ask for 100 results from the specified column family (all results, in our case)
 			SlicePredicate predicate = new SlicePredicate();
 			predicate.setSlice_range(new SliceRange(ByteBuffer.wrap(new byte[0]), ByteBuffer.wrap(new byte[0]),
 					false, 100));
@@ -383,6 +432,7 @@ public class BridgesTarjan {
 			results = client.get_range_slices(parent, predicate, keyRange, consistencyLevel);
 		}
 		
+		// Gets all keys from the Edges column for the specified column family.
 		public List<String> getEdges () throws Exception {
 			
 			List<String> returnList = new ArrayList<String>();
@@ -395,6 +445,7 @@ public class BridgesTarjan {
 			return returnList;
 		}
 		
+		// Closes the database connection.
 		public void close () throws Exception {
 			 
 			// Clean up.
