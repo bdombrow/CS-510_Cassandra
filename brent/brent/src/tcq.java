@@ -1,5 +1,5 @@
 /*
- * Transitive Closure for un-weighted, directed graph.
+ * Transitive Closure for weighted, undirected graph.
  * 
  * This method trades memory usage for queries, it is noticeably slower.
  * 
@@ -36,6 +36,7 @@ public class tcq {
 
 	public static void main(String[] args) throws Exception {
 
+		// Set the host from the command line if supplied
 		if (args.length == 1)
 			host = args[0];
 
@@ -50,9 +51,9 @@ public class tcq {
 
 		// Need to find the highest numbered node	
 		int highNode = getHighNode();
-		
+
 		System.out.println("Setting up output Column Family TC.");
-		
+
 		// Drop the output column family
 		ByteBuffer query = ByteBuffer.wrap("DROP COLUMNFAMILY TC;".getBytes());
 		try {
@@ -61,25 +62,22 @@ public class tcq {
 			if (e.toString().contentEquals("InvalidRequestException(why:CF is not defined in that keyspace.)")) {
 				// Ignore the exception if the column family doesn't exists
 			} else {
-			throw e;
+				throw e;
 			}
 		}
-			
+
 		// Create a column family for the results
 		query = ByteBuffer.wrap("CREATE COLUMNFAMILY TC (key varchar PRIMARY KEY, start varchar, end varchar, weight varchar);".getBytes());
 		CqlResult results = client.execute_cql_query(query, compression); // Returns null if 
 
 		query = ByteBuffer.wrap("CREATE INDEX ON TC (start);".getBytes());
 		results = client.execute_cql_query(query, compression);
-		
+
 		query = ByteBuffer.wrap("CREATE INDEX ON TC (end);".getBytes());
-		results = client.execute_cql_query(query, compression);
-		
-		query = ByteBuffer.wrap("CREATE INDEX ON TC (weight);".getBytes());
 		results = client.execute_cql_query(query, compression);
 
 		System.out.println("Copying existing edges.");
-		
+
 		/*
 		 *  Copy the Edges to the TC graph
 		 *  
@@ -88,26 +86,39 @@ public class tcq {
 		 *  
 		 */
 		for (int i = 1; i <= highNode; ++i) {
-			query = ByteBuffer.wrap(("SELECT end FROM Edges WHERE start = " + i + ";").getBytes());
+			query = ByteBuffer.wrap(("SELECT start, end, weight FROM WEdges WHERE start = " + i + ";").getBytes());
 			results = client.execute_cql_query(query, compression);
 			if (!results.rows.isEmpty()){
 				for (CqlRow row : results.getRows()) {
+					String start = "0";
+					String end = "0";
+					String weight = "N";
 					for (Column col : row.getColumns()) {
 						String name = decoder.decode(col.name).toString();
 						String value = decoder.decode(col.value).toString();
-						if (name.contentEquals("end")) {
-							query = ByteBuffer.wrap(("INSERT INTO TC ('key', 'start', 'end', 'weight') VALUES (\'" + i + "-" + value + "\',\'" + i + "\',\'" + value +"\', '2');").getBytes());
-							client.execute_cql_query(query, compression);
+						if (name.contentEquals("start")) {
+							start = value;
+						} else if (name.contentEquals("end")) {
+							end = value;
+						} else if (name.contentEquals("weight")) {
+							weight = value;
 						}
 					}
+					query = ByteBuffer.wrap(("INSERT INTO TC ('key', 'start', 'end', 'weight') VALUES (\'" + start + "-" + end + "\',\'" + start + "\',\'" + end +"\', '" + weight +"');").getBytes());
+					client.execute_cql_query(query, compression);
+					// Undirected, add the other direction.
+					query = ByteBuffer.wrap(("INSERT INTO TC ('key', 'start', 'end', 'weight') VALUES (\'" + end + "-" + start + "\',\'" + end + "\',\'" + start +"\', '" + weight + "');").getBytes());
+					client.execute_cql_query(query, compression);
 				}
 			}
 		}
 
+		printTC(highNode);
+
 		System.out.println("Calculating Transitive Closure.");
-		
+
 		// Calculate the transitive closure.
-		
+
 		/*
 		 * All paths are equal in this implementation.
 		 * Paths are directed.
@@ -115,19 +126,52 @@ public class tcq {
 		for (int k = 0; k < highNode; ++k) {
 			for (int i = 0; i < highNode; ++i) {
 				for (int j = 0; j < highNode; ++j) {
-					if (path(i,k) && path (k,j)) { // This is a path from [i][k] to [k][j]
-						insertPath(i, j);
+					if (i != j) {
+						if (path(i,k) && path (k,j)) { // This is a path from [i][k] to [k][j]
+							if (path(i,j)) {
+								if ((getWeight(i,k) + getWeight(k,j)) < getWeight(i,j))
+									insertPath(i,j, getWeight(i,k) + getWeight(k,j));
+							} else {
+								insertPath(i, j, getWeight(i,k) + getWeight(k,j));
+							}
+						}
 					}
 				}
 			}
 		}
 
+		printTC(highNode);
+
 		transport.flush();
 		transport.close();
-		
+
 		System.out.println("Finished. Results in Column Family TC.");
 
 	}
+
+	private static void printTC(int dimension) throws Exception{
+		System.out.print("\n\t");
+		for (int i = 1; i <= dimension ; ++i) {
+			System.out.print("\t" + i + ":");
+		}
+		System.out.print("\n");
+
+		for (int i = 1; i <= dimension; ++i ) {
+			System.out.print(i + "\t|");
+			for (int j = 1; j <= dimension; ++j) {
+				if (i == j) {
+					System.out.print("\t" + 0); // Weight to self is 0
+				} else if (path(i,j)) {
+					System.out.print("\t" + getWeight(i,j)); // All other weights are equal
+				} else {
+					System.out.print("\tN"); // There is no path
+				}
+			}
+			System.out.print("\n");
+		}
+	}
+
+
 	/*
 	 * See if there is an edge from i to j.
 	 * 
@@ -136,21 +180,39 @@ public class tcq {
 		ByteBuffer query = ByteBuffer.wrap(("SELECT key FROM TC WHERE start = " + i + " and end = " + j + ";").getBytes());
 		CqlResult results = client.execute_cql_query(query, compression);
 		if (results.rows.size() > 0) {
-			return true;
+			return true; // If there are results, then there is a path
 		}
 		return false;
+
+	}
+	
+	/*
+	 * Get the weight for a path
+	 * 
+	 */
+	private static double getWeight(int i, int j) throws Exception{
+		ByteBuffer query = ByteBuffer.wrap(("SELECT weight FROM TC WHERE start = " + i + " and end = " + j + ";").getBytes());
+		CqlResult results = client.execute_cql_query(query, compression);
 		
+		for (CqlRow row : results.getRows()) {
+			for (Column col : row.getColumns()) {
+				String name = decoder.decode(col.name).toString();
+				double value = Double.parseDouble(decoder.decode(col.value).toString());
+				if (name.contentEquals("weight")) {
+					return value;
+				}
+			}
+		}
+		return 0;
 	}
 
 	/*
 	 * Add a path from i to j in the transitive closure
 	 * 
-	 * The weight is set to 2 for the transitive edges
-	 * 
 	 * Throws an exception if something went wrong.
 	 */
-	private static void insertPath(int i, int j) throws Exception{
-		ByteBuffer query = ByteBuffer.wrap(("INSERT INTO TC ('key', 'start', 'end', 'weight') VALUES ('" + i + "=" + j + "', '" + i + "', '" + j + "', '1');" ).getBytes());
+	private static void insertPath(int i, int j, double weight) throws Exception{
+		ByteBuffer query = ByteBuffer.wrap(("INSERT INTO TC ('key', 'start', 'end', 'weight') VALUES ('" + i + "=" + j + "', '" + i + "', '" + j + "', '" + weight + "');" ).getBytes());
 		client.execute_cql_query(query, compression);
 	}
 
