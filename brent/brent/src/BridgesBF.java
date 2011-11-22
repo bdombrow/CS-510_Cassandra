@@ -1,7 +1,12 @@
 /*
  * Brute force bridges.
  * 
- * This thing is not memory efficient.
+ * This requires enough memory to hold:
+ * 	All the nodes at once to find the highest one.
+ * 	All the edges at once + three [n][n] matrices for the edges where n is the highest numbered node..
+ * 
+ * Set the host address and the undirected flag before running.
+ * The host address can be set at runtime by passing it as the only argument.
  */
 
 import java.io.ByteArrayInputStream;
@@ -24,7 +29,7 @@ import org.apache.thrift.transport.TSocket;
 public class BridgesBF {
 	static String host = "localhost";
 	static int port = 9160;
-	static boolean undirected = true;
+	static boolean undirected = false;
 	// Set up decoder.
 	static Charset charset = Charset.forName("UTF-8");
 	static CharsetDecoder decoder = charset.newDecoder();
@@ -36,7 +41,7 @@ public class BridgesBF {
 		}
 
 		// Need to find the highest numbered node	
-		int highNode = 14;
+		int highNode = getHighNode();
 		int[][] nodeList = new int[highNode][highNode];
 
 
@@ -81,7 +86,43 @@ public class BridgesBF {
 		}
 
 	}
+	/*
+	 * Find the highest numbered node in the graph
+	 * 
+	 */
+	private static int getHighNode() throws Exception{
+		// Set up connection.
+		TTransport transport = new TFramedTransport(new TSocket(host, port));
+		TProtocol protocol = new TBinaryProtocol(transport);
+		Cassandra.Client client = new Cassandra.Client(protocol);
+		transport.open();
 
+		// Set the keyspace we are using.
+		client.set_keyspace("CDM");
+		
+		ByteBuffer query = ByteBuffer.wrap("SELECT key FROM Nodes;".getBytes());
+		CqlResult results = client.execute_cql_query(query, Compression.NONE);
+		int high = 0;
+
+		// Go through the results and find the highest numbered node
+		for (CqlRow row : results.getRows()) {
+			for (Column col : row.getColumns()) {
+				String name = decoder.decode(col.name).toString();
+				int value = Integer.parseInt(decoder.decode(col.value).toString());
+				if (name.contentEquals("key")) {
+					if (value > high) high = value;
+				}
+			}
+		}
+		transport.flush();
+		transport.close();
+
+		return high;
+	}
+	
+	/*
+	 * Print out the contents of the matrix
+	 */
 	@SuppressWarnings("unused")
 	private static void printArray(int[][] array) {
 		System.out.print("\n\t");
@@ -99,6 +140,9 @@ public class BridgesBF {
 		}
 	}
 
+	/*
+	 * Check for a difference in the transitive closures
+	 */
 	private static boolean transDiff(int[][] ref, int[][] trans) {
 		for (int i = 0; i < ref.length; ++i) {
 			for (int j = 0; j < ref.length; ++j) {
@@ -110,6 +154,9 @@ public class BridgesBF {
 	return false;
 	}
 
+	/*
+	 * Calculate the transitive closure.
+	 */
 	private static void transC(int[][] inputArray) {
 		// 0 = no path
 		for (int k = 0; k < inputArray.length; ++k) {
@@ -124,6 +171,10 @@ public class BridgesBF {
 		}			
 	}
 	
+	/*
+	 * Get a list of all the edges from the data store.
+	 * 
+	 */
 	private static void getEdges(Stack<String> edgeStack) throws Exception {
 		// Set up connection.
 		TTransport transport = new TFramedTransport(new TSocket(host, port));
@@ -154,6 +205,10 @@ public class BridgesBF {
 		transport.close();
 	}
 
+	/*
+	 * Initialize the weights
+	 * 
+	 */
 	private static void getWeights(int[][] inputArray) throws Exception{
 		// All weights are 1 since we are only concerned with bridges
 		int start_node = 0;
@@ -204,6 +259,7 @@ public class BridgesBF {
 
 	/* Object cloner taken from http://www.javaworld.com/javaworld/javatips/jw-javatip76.html?page=2
 	 * 
+	 * Used to make a deep copy of the nodeList
 	 */
 
 	static public Object deepCopy(Object oldObj) throws Exception

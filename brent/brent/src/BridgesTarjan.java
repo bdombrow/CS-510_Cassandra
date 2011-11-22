@@ -404,7 +404,7 @@ public class BridgesTarjan {
 		public DBHelper () throws Exception {
 
 			// Set up connection.
-			transport = new TFramedTransport(new TSocket("localhost", 9160));
+			transport = new TFramedTransport(new TSocket("10.9.73.119", 9160));
 			TProtocol protocol = new TBinaryProtocol(transport);
 			Cassandra.Client client = new Cassandra.Client(protocol);
 			transport.open();

@@ -14,7 +14,9 @@ import org.apache.thrift.transport.TSocket;
 /*
  * This is a really simple CQL Shell.
  * 
- * quit will end the session.
+ * quit; will end the session.
+ * 
+ * Note: null exceptions are common for queries that have no results.
  * 
  */
 

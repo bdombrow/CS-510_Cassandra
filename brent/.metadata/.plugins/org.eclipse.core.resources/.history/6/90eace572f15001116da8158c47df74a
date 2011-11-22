@@ -1,0 +1,242 @@
+/*
+ * Transitive Closure for weighted, undirected graph.
+ * 
+ * This method trades memory usage for queries, it is noticeably slower.
+ * 
+ * The getHighNode method will require enough memory to hold all the nodes.
+ * 
+ * The edge keys need to be in the form of i-j where i < j.
+ * 
+ */
+
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+
+import org.apache.cassandra.thrift.*;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TFramedTransport;
+import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TSocket;
+
+
+public class tcq {
+
+	// Connection variables
+	static private TTransport transport;
+	static private TProtocol protocol;
+	static private Cassandra.Client client;
+	static private final Compression compression = Compression.NONE;
+
+	static private String host;
+
+	// Set up the decoder
+	static CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
+
+
+	public static void main(String[] args) throws Exception {
+
+		// Set the host from the command line if supplied
+		if (args.length == 1)
+			host = args[0];
+
+		// Set up connection.
+		transport = new TFramedTransport(new TSocket(host, 9160));
+		protocol = new TBinaryProtocol(transport);
+		client = new Cassandra.Client(protocol);
+		transport.open();
+
+		// Set the keyspace we are using.
+		client.set_keyspace("CDM");
+
+		// Need to find the highest numbered node	
+		int highNode = getHighNode();
+
+		System.out.println("Setting up output Column Family TC.");
+
+		// Drop the output column family
+		ByteBuffer query = ByteBuffer.wrap("DROP COLUMNFAMILY TC;".getBytes());
+		try {
+			client.execute_cql_query(query, compression);
+		} catch (Exception e){
+			if (e.toString().contentEquals("InvalidRequestException(why:CF is not defined in that keyspace.)")) {
+				// Ignore the exception if the column family doesn't exists
+			} else {
+				throw e;
+			}
+		}
+
+		// Create a column family for the results
+		query = ByteBuffer.wrap("CREATE COLUMNFAMILY TC (key varchar PRIMARY KEY, start varchar, end varchar, weight varchar);".getBytes());
+		CqlResult results = client.execute_cql_query(query, compression); // Returns null if 
+
+		query = ByteBuffer.wrap("CREATE INDEX ON TC (start);".getBytes());
+		results = client.execute_cql_query(query, compression);
+
+		query = ByteBuffer.wrap("CREATE INDEX ON TC (end);".getBytes());
+		results = client.execute_cql_query(query, compression);
+
+		System.out.println("Copying existing edges.");
+
+		/*
+		 *  Copy the Edges to the TC graph
+		 *  
+		 *  Go through each node and find all the connected nodes.
+		 *  Add the node - connected node edges to the transitive closure.
+		 *  
+		 */
+		for (int i = 1; i <= highNode; ++i) {
+			query = ByteBuffer.wrap(("SELECT start, end, weight FROM WEdges WHERE start = " + i + ";").getBytes());
+			results = client.execute_cql_query(query, compression);
+			if (!results.rows.isEmpty()){
+				for (CqlRow row : results.getRows()) {
+					String start = "0";
+					String end = "0";
+					String weight = "N";
+					for (Column col : row.getColumns()) {
+						String name = decoder.decode(col.name).toString();
+						String value = decoder.decode(col.value).toString();
+						if (name.contentEquals("start")) {
+							start = value;
+						} else if (name.contentEquals("end")) {
+							end = value;
+						} else if (name.contentEquals("weight")) {
+							weight = value;
+						}
+					}
+					query = ByteBuffer.wrap(("INSERT INTO TC ('key', 'start', 'end', 'weight') VALUES (\'" + start + "-" + end + "\',\'" + start + "\',\'" + end +"\', '" + weight +"');").getBytes());
+					client.execute_cql_query(query, compression);
+/*					// Undirected, add the other direction.
+					query = ByteBuffer.wrap(("INSERT INTO TC ('key', 'start', 'end', 'weight') VALUES (\'" + end + "-" + start + "\',\'" + end + "\',\'" + start +"\', '" + weight + "');").getBytes());
+					client.execute_cql_query(query, compression);*/
+				}
+			}
+		}
+
+		printTC(highNode);
+
+		System.out.println("Calculating Transitive Closure.");
+
+		// Calculate the transitive closure.
+
+		/*
+		 * All paths are equal in this implementation.
+		 * Paths are directed.
+		 */
+		for (int k = 0; k < highNode; ++k) {
+			for (int i = 0; i < highNode; ++i) {
+				for (int j = 0; j < highNode; ++j) {
+					if (i < j) {
+						if (path(i,k) && path (k,j)) { // This is a path from [i][k] to [k][j]
+							if (path(i,j)) {
+								if ((getWeight(i,k) + getWeight(k,j)) < getWeight(i,j))
+									insertPath(i,j, getWeight(i,k) + getWeight(k,j));
+							} else {
+								insertPath(i, j, getWeight(i,k) + getWeight(k,j));
+							}
+						}
+					}
+				}
+			}
+		}
+
+		printTC(highNode);
+
+		transport.flush();
+		transport.close();
+
+		System.out.println("Finished. Results in Column Family TC.");
+
+	}
+
+	private static void printTC(int dimension) throws Exception{
+		System.out.print("\n\t");
+		for (int i = 1; i <= dimension ; ++i) {
+			System.out.print("\t" + i + ":");
+		}
+		System.out.print("\n");
+
+		for (int i = 1; i <= dimension; ++i ) {
+			System.out.print(i + "\t|");
+			for (int j = 1; j <= dimension; ++j) {
+				if (i == j) {
+					System.out.print("\t" + 0); // Weight to self is 0
+				} else if (path(i,j)) {
+					System.out.print("\t" + getWeight(i,j)); // All other weights are equal
+				} else {
+					System.out.print("\tN"); // There is no path
+				}
+			}
+			System.out.print("\n");
+		}
+	}
+
+
+	/*
+	 * See if there is an edge from i to j.
+	 * 
+	 */
+	private static boolean path(int i, int j) throws Exception{
+		ByteBuffer query = ByteBuffer.wrap(("SELECT key FROM TC WHERE start = " + i + " and end = " + j + ";").getBytes());
+		CqlResult results = client.execute_cql_query(query, compression);
+		if (results.rows.size() > 0) {
+			return true; // If there are results, then there is a path
+		}
+		return false;
+
+	}
+	
+	/*
+	 * Get the weight for a path
+	 * 
+	 */
+	private static double getWeight(int i, int j) throws Exception{
+		ByteBuffer query = ByteBuffer.wrap(("SELECT weight FROM TC WHERE start = " + i + " and end = " + j + ";").getBytes());
+		CqlResult results = client.execute_cql_query(query, compression);
+		
+		for (CqlRow row : results.getRows()) {
+			for (Column col : row.getColumns()) {
+				String name = decoder.decode(col.name).toString();
+				double value = Double.parseDouble(decoder.decode(col.value).toString());
+				if (name.contentEquals("weight")) {
+					return value;
+				}
+			}
+		}
+		return 0;
+	}
+
+	/*
+	 * Add a path from i to j in the transitive closure
+	 * 
+	 * Throws an exception if something went wrong.
+	 */
+	private static void insertPath(int i, int j, double weight) throws Exception{
+		ByteBuffer query = ByteBuffer.wrap(("INSERT INTO TC ('key', 'start', 'end', 'weight') VALUES ('" + i + "=" + j + "', '" + i + "', '" + j + "', '" + weight + "');" ).getBytes());
+		client.execute_cql_query(query, compression);
+	}
+
+	/*
+	 * Find the highest numbered node in the graph
+	 * 
+	 * Throws an exception if something went wrong.
+	 */
+	private static int getHighNode() throws Exception{
+		ByteBuffer query = ByteBuffer.wrap("SELECT key FROM Nodes;".getBytes());
+		CqlResult results = client.execute_cql_query(query, compression);
+		int high = 0;
+
+		// Go through the results and find the highest numbered node
+		for (CqlRow row : results.getRows()) {
+			for (Column col : row.getColumns()) {
+				String name = decoder.decode(col.name).toString();
+				int value = Integer.parseInt(decoder.decode(col.value).toString());
+				if (name.contentEquals("key")) {
+					if (value > high) high = value;
+				}
+			}
+		}
+
+		return high;
+	}
+}
